@@ -16,9 +16,8 @@ import java.util.Map;
 /**
  * 用户相关操作
  */
-@Controller
-@RequestMapping("")
-//@RestController
+@RequestMapping("/account")
+@RestController
 public class AccountController extends AbsController {
 
     private static final Logger log = LoggerFactory.getLogger(AccountController.class);
@@ -37,7 +36,7 @@ public class AccountController extends AbsController {
     /**
      * 显示用户列表
      */
-    @GetMapping("accounts")
+    @GetMapping("/list")
     public String accounts(@RequestParam Map params, Model model) {
         List<Record> list = custUserMapper.getUsers();
         return list.toString();

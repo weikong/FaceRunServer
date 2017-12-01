@@ -21,7 +21,6 @@ import java.util.Map;
 /**
  * 用户相关操作
  */
-//@Controller
 @RequestMapping("")
 @RestController
 public class RunController extends AbsController {

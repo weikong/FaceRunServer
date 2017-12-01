@@ -24,4 +24,15 @@ import java.util.Map;
 public class TestController extends AbsController {
 
     private static final Logger log = LoggerFactory.getLogger(TestController.class);
+
+    @Autowired
+    private RunMapper runMapper;
+    /**
+     * 用户数据
+     */
+    @GetMapping("run_datas2")
+    public String runDatas(@RequestParam Map params, Model model) {
+        List<Run> list = runMapper.selectByExample(null);
+        return "index";
+    }
 }

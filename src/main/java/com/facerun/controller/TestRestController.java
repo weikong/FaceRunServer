@@ -30,7 +30,7 @@ public class TestRestController extends AbsController {
     /**
      * 用户数据
      */
-    @GetMapping("run_datas")
+    @GetMapping("run_datas1")
     public String runDatas(@RequestParam Map params, Model model) {
         List<Run> list = runMapper.selectByExample(null);
         return list.toString();
