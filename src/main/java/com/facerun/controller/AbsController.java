@@ -10,11 +10,11 @@ import java.util.Map;
 public abstract class AbsController {
 
     public ResponseEntity ajax() {
-        return ajax(0, null, null);
+        return ajax(1, null, null);
     }
 
     public ResponseEntity ajax(Object data) {
-        return ajax(0, null, data);
+        return ajax(1, null, data);
     }
 
     public ResponseEntity ajax(Code code) {
