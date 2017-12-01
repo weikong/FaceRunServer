@@ -73,6 +73,21 @@ public class RunController extends AbsController {
         }
     }
 
+    @PostMapping("/insert_batch")
+    @ResponseBody
+    public Object insertBatch(@RequestParam Map params, Model model) {
+        try {
+            runService.runInsertBatch(params);
+            return ajax();
+        } catch (BizException e) {
+            log.error(e.getMessage());
+            return ajax(e);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ajax(Code.FAIL);
+        }
+    }
+
     @PostMapping("/del")
     @ResponseBody
     public Object runDelete(@RequestParam Map params, Model model) {

@@ -80,6 +80,19 @@ public class RunService {
             throw new BizException(Code.FAIL_DATABASE_INSERT);
     }
 
+    public void runInsertBatch(Map params){
+        int account_id = MapUtils.getInteger(params,"account_id",0);
+        Account account = accountMapper.selectByPrimaryKey(account_id);
+        if (account == null)
+            throw new BizException(Code.USER_NOT_EXIST);
+        List<Run> list = (List<Run>) MapUtils.getObject(params,"list");
+        for (Run run : list){
+            int insert = runMapper.insertSelective(run);
+            if (insert != 1)
+                throw new BizException(Code.FAIL_DATABASE_INSERT);
+        }
+    }
+
     public void runDelete(Map params){
         int account_id = MapUtils.getInteger(params,"account_id",0);
         int run_id = MapUtils.getInteger(params,"id",0);
