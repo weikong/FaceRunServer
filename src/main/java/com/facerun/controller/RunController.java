@@ -43,11 +43,12 @@ public class RunController extends AbsController {
     /**
      * 用户数据
      */
-    @GetMapping("/list")
+    @PostMapping("/list_by_account")
     @ResponseBody
     public Object runList(@RequestParam Map params, Model model) {
         try {
-            List<Run> list = runService.runList(params);
+            String strAccount = MapUtils.getString(params,"Account","");
+            List<Run> list = runService.runList(strAccount);
             return ajax(list);
         } catch (BizException e) {
             log.error(e.getMessage());

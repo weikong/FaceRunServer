@@ -31,11 +31,30 @@ public class RunService {
     private AccountMapper accountMapper;
     @Autowired
     private RunMapper runMapper;
+    @Autowired
+    private AccountService accountService;
 
     public List<Run> runList(Map params){
         int account_id = MapUtils.getInteger(params,"account_id",0);
         RunExample example = new RunExample();
         example.createCriteria().andAccountIdEqualTo(account_id);
+        List<Run> list = runMapper.selectByExample(example);
+        return list;
+    }
+
+    public List<Run> runList(int account_id){
+        RunExample example = new RunExample();
+        example.createCriteria().andAccountIdEqualTo(account_id);
+        List<Run> list = runMapper.selectByExample(example);
+        return list;
+    }
+
+    public List<Run> runList(String strAccount){
+        Account account = accountService.accountSelect(strAccount);
+        if (account == null)
+            throw new BizException(Code.USER_NOT_EXIST);
+        RunExample example = new RunExample();
+        example.createCriteria().andAccountIdEqualTo(account.getId());
         List<Run> list = runMapper.selectByExample(example);
         return list;
     }

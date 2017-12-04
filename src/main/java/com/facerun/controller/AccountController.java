@@ -7,6 +7,7 @@ import com.facerun.dao.CustUserMapper;
 import com.facerun.exception.BizException;
 import com.facerun.service.AccountService;
 import com.facerun.util.Code;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,46 @@ public class AccountController extends AbsController {
         return "index";
     }
 
+    /**
+     * 用户登录
+     */
+    @PostMapping("/login")
+    @ResponseBody
+    public Object login(@RequestParam Map params, Model model) {
+        try {
+            Account account = accountService.login(params);
+            if (account == null)
+                throw new BizException(Code.USER_NOT_EXIST);
+            return ajax(account);
+        } catch (BizException e) {
+            log.error(e.getMessage());
+            return ajax(e);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ajax(Code.FAIL);
+        }
+    }
+
+    /**
+     * 用户登录
+     */
+    @PostMapping("/logout")
+    @ResponseBody
+    public Object logOut(@RequestParam Map params, Model model) {
+        try {
+            Account account = accountService.logOut(params);
+            if (account == null)
+                throw new BizException(Code.USER_NOT_EXIST);
+            return ajax(account);
+        } catch (BizException e) {
+            log.error(e.getMessage());
+            return ajax(e);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ajax(Code.FAIL);
+        }
+    }
+
     @PostMapping("/insert")
     @ResponseBody
     public Object insert(@RequestParam Map params, Model model) {
@@ -64,7 +105,7 @@ public class AccountController extends AbsController {
             Account account = accountService.accountSelect(params);
             if (account == null)
                 throw new BizException(Code.USER_NOT_EXIST);
-            return account;
+            return ajax(account);
         } catch (BizException e) {
             log.error(e.getMessage());
             return ajax(e);
@@ -72,7 +113,27 @@ public class AccountController extends AbsController {
             log.error(e.getMessage());
             return ajax(Code.FAIL);
         }
+    }
 
+    /**
+     * 查询用户
+     */
+    @GetMapping("/select_by_account")
+    @ResponseBody
+    public Object accountByAccount(@RequestParam Map params, Model model) {
+        try {
+            String strAccount = MapUtils.getString(params,"account","");
+            Account account = accountService.accountSelect(strAccount);
+            if (account == null)
+                throw new BizException(Code.USER_NOT_EXIST);
+            return ajax(account);
+        } catch (BizException e) {
+            log.error(e.getMessage());
+            return ajax(e);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ajax(Code.FAIL);
+        }
     }
 
     /**
@@ -82,6 +143,6 @@ public class AccountController extends AbsController {
     @ResponseBody
     public Object accountList(@RequestParam Map params, Model model) {
         List<Record> list = custUserMapper.getUsers();
-        return list.toString();
+        return ajax(list);
     }
 }

@@ -31,6 +31,27 @@ public class AccountService {
     @Autowired
     private AccountMapper accountMapper;
 
+    public Account login(Map params){
+        String strAccount = MapUtils.getString(params,"Account","");
+        String strPassword = MapUtils.getString(params,"Password","");
+        AccountExample example = new AccountExample();
+        example.createCriteria().andAccountEqualTo(strAccount).andPasswordEqualTo(strPassword);
+        List<Account> list = accountMapper.selectByExample(example);
+        if (list != null && list.size() > 0)
+            return list.get(0);
+        return null;
+    }
+
+    public Account logOut(Map params){
+        String strAccount = MapUtils.getString(params,"Account","");
+        AccountExample example = new AccountExample();
+        example.createCriteria().andAccountEqualTo(strAccount);
+        List<Account> list = accountMapper.selectByExample(example);
+        if (list != null && list.size() > 0)
+            return list.get(0);
+        return null;
+    }
+
     public void accountInsert(Map params){
         int type = MapUtils.getInteger(params,"type",0);
         int status = MapUtils.getInteger(params,"status",0);
