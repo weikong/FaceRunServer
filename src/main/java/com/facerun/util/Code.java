@@ -9,6 +9,9 @@ public enum Code {
     DATA_ERROR(-5, "error.data_error"),
     USER_NOT_EXIST(-6, "user.not.exist"),
     USER_EXIST(-7, "user.exist"),
+    ERROR_USER_NAME_EMPTY(-8, "User name empty"),
+    ERROR_USER_PSD_EMPTY(-9, "User psd empty"),
+    ERROR_USER_NAME_PSD(-10, "Username or psd error"),
 
     FILE_EMPTY(-4001, "File is empty"),
     FILE_UPLOAD_FAIL(-4002, "File upload fail"),

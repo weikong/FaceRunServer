@@ -43,10 +43,16 @@
         </javaClientGenerator>
 
         <!-- 数据库表配置 -->
+        <!--用户表-->
         <table tableName="account" domainObjectName="Account">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
+        <!--跑步数据表-->
         <table tableName="run" domainObjectName="Run">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <!--跑友圈数据表-->
+        <table tableName="circle" domainObjectName="Circle">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
     </context>

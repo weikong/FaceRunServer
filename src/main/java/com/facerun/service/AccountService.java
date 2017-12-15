@@ -31,19 +31,28 @@ public class AccountService {
     @Autowired
     private AccountMapper accountMapper;
 
-    public Account login(Map params){
-        String strAccount = MapUtils.getString(params,"Account","");
-        String strPassword = MapUtils.getString(params,"Password","");
+    public Account login(Map params) {
+        String strAccount = MapUtils.getString(params, "Account", "");
+        if (StringUtils.isEmpty(strAccount))
+            throw new BizException(Code.ERROR_USER_NAME_EMPTY);
+        Account account = accountSelect(strAccount);
+        if (account == null)
+            throw new BizException(Code.USER_NOT_EXIST);
+        String strPassword = MapUtils.getString(params, "Password", "");
+        if (StringUtils.isEmpty(strPassword))
+            throw new BizException(Code.ERROR_USER_PSD_EMPTY);
         AccountExample example = new AccountExample();
         example.createCriteria().andAccountEqualTo(strAccount).andPasswordEqualTo(strPassword);
         List<Account> list = accountMapper.selectByExample(example);
+        if (list == null || list.isEmpty())
+            throw new BizException(Code.ERROR_USER_NAME_PSD);
         if (list != null && list.size() > 0)
             return list.get(0);
         return null;
     }
 
-    public Account logOut(Map params){
-        String strAccount = MapUtils.getString(params,"Account","");
+    public Account logOut(Map params) {
+        String strAccount = MapUtils.getString(params, "Account", "");
         AccountExample example = new AccountExample();
         example.createCriteria().andAccountEqualTo(strAccount);
         List<Account> list = accountMapper.selectByExample(example);
@@ -52,12 +61,12 @@ public class AccountService {
         return null;
     }
 
-    public void accountInsert(Map params){
-        int type = MapUtils.getInteger(params,"type",0);
-        int status = MapUtils.getInteger(params,"status",0);
-        String name = MapUtils.getString(params,"name","");
-        String strAccount = MapUtils.getString(params,"account","");
-        String password = MapUtils.getString(params,"password","");
+    public void accountInsert(Map params) {
+        int type = MapUtils.getInteger(params, "type", 0);
+        int status = MapUtils.getInteger(params, "status", 0);
+        String name = MapUtils.getString(params, "name", "");
+        String strAccount = MapUtils.getString(params, "account", "");
+        String password = MapUtils.getString(params, "password", "");
         Date create_at = new Date();
         if (StringUtils.isEmpty(strAccount))
             throw new BizException(Code.DATA_ERROR);
@@ -76,18 +85,18 @@ public class AccountService {
             throw new BizException(Code.FAIL_DATABASE_INSERT);
     }
 
-    public Account accountSelect(Map params){
-        int account_id = MapUtils.getInteger(params,"account_id",0);
+    public Account accountSelect(Map params) {
+        int account_id = MapUtils.getInteger(params, "account_id", 0);
         Account account = accountMapper.selectByPrimaryKey(account_id);
         return account;
     }
 
-    public Account accountSelect(int account_id){
+    public Account accountSelect(int account_id) {
         Account account = accountMapper.selectByPrimaryKey(account_id);
         return account;
     }
 
-    public Account accountSelect(String account){
+    public Account accountSelect(String account) {
         AccountExample example = new AccountExample();
         example.createCriteria().andAccountEqualTo(account);
         List<Account> list = accountMapper.selectByExample(example);

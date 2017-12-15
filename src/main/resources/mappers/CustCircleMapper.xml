@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.facerun.dao.CustCircleMapper">
+
+    <resultMap id="BaseResultMap" type="com.facerun.bean.Circle">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="account_id" jdbcType="BIGINT" property="accountId"/>
+        <result column="create_time" jdbcType="DATE" property="createTime"/>
+        <result column="modify_time" jdbcType="DATE" property="modifyTime"/>
+    </resultMap>
+
+    <select id="getCircleList" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT
+        c.*
+        FROM circle c
+        ORDER BY c.create_time DESC
+        <if test="beginNum !=null">
+            limit #{beginNum},#{limitSize}
+        </if>
+    </select>
+</mapper>
