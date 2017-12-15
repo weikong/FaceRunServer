@@ -34,7 +34,6 @@ public class CircleController extends AbsController {
     @ResponseBody
     public Object query(@RequestParam Map params, Model model) {
         try {
-            // TODO: 2017/12/14 查询朋友圈
             return ajax(circleService.circleQuery(params));
         } catch (BizException e) {
             log.error(e.getMessage());
