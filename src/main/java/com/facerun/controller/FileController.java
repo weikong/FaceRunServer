@@ -1,5 +1,6 @@
 package com.facerun.controller;
 
+import com.facerun.util.Code;
 import com.facerun.util.Config;
 import com.facerun.util.FileUtil;
 import org.apache.commons.collections4.MapUtils;
@@ -22,7 +23,7 @@ import java.util.*;
  * Created by xinzhendi-031 on 2017/7/14.
  */
 @RestController
-public class FileController {
+public class FileController extends AbsController {
 
     private static final Logger logger = LoggerFactory.getLogger(FileController.class);
 
@@ -101,7 +102,7 @@ public class FileController {
     //多文件上传
     @RequestMapping(value = "/batch/upload", method = RequestMethod.POST)
     @ResponseBody
-    public String handleFileUpload(HttpServletRequest request) {
+    public Object handleFileUpload(HttpServletRequest request) {
         List<MultipartFile> files = ((MultipartHttpServletRequest) request)
                 .getFiles("file");
         if (files != null && files.size() > 0) {
@@ -122,10 +123,8 @@ public class FileController {
         }
         MultipartFile file = null;
         BufferedOutputStream stream = null;
-
         // 文件上传后的路径
         String filePath = Config.DEFAULT_UPLOAD_FILE_PATH;
-
         StringBuffer resultMsg = new StringBuffer();
         for (int i = 0; i < files.size(); ++i) {
             file = files.get(i);
@@ -140,33 +139,25 @@ public class FileController {
                     if (!dest.getParentFile().exists()) {
                         dest.getParentFile().mkdirs();
                     }
-                    try {
-                        file.transferTo(dest);
-                        logger.info("上传成功");
-                    } catch (IllegalStateException e) {
-                        e.printStackTrace();
-                        logger.info("上传失败");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        logger.info("上传失败");
-                    }
-//                    byte[] bytes = file.getBytes();
-//                    stream = new BufferedOutputStream(new FileOutputStream(
-//                            new File(file.getOriginalFilename())));
-//                    stream.write(bytes);
-//                    stream.close();
+                    file.transferTo(dest);
+                    resultMsg.append(fileName + ",");
+                } catch (IllegalStateException e) {
+                    e.printStackTrace();
+                    logger.info("上传失败");
+                    return ajax(Code.FILE_UPLOAD_FAIL);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    logger.info("上传失败");
+                    return ajax(Code.FILE_UPLOAD_FAIL);
                 } catch (Exception e) {
-                    stream = null;
-                    resultMsg.append(fileName + " 上传失败");
+                    e.printStackTrace();
+                    logger.info("上传失败");
+                    return ajax(Code.FILE_UPLOAD_FAIL);
                 }
             } else {
-//                resultMsg.append(i + " because the file was empty.");
-                resultMsg.append(" because the file was empty.");
+                return ajax(Code.FILE_EMPTY);
             }
         }
-        if (resultMsg.length() == 0)
-            return "上传成功";
-        else
-            return resultMsg.toString();
+        return ajax(resultMsg.toString());
     }
 }
