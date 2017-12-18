@@ -6,6 +6,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ui.Model;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -15,8 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by xinzhendi-031 on 2017/7/14.
@@ -104,17 +104,29 @@ public class FileController {
     public String handleFileUpload(HttpServletRequest request) {
         List<MultipartFile> files = ((MultipartHttpServletRequest) request)
                 .getFiles("file");
+        if (files != null && files.size() > 0) {
+        } else {
+            if (files != null) {
+                files.clear();
+                files = null;
+                files = new ArrayList<>();
+            }
+            MultiValueMap files2 = ((MultipartHttpServletRequest) request).getMultiFileMap();
+            Set<String> set = files2.keySet();
+            for (Iterator it = set.iterator(); it.hasNext(); ) {
+                LinkedList<MultipartFile> list = (LinkedList<MultipartFile>) files2.get(it.next().toString());
+                for (MultipartFile file : list) {
+                    files.add(file);
+                }
+            }
+        }
         MultipartFile file = null;
         BufferedOutputStream stream = null;
 
         // 文件上传后的路径
         String filePath = Config.DEFAULT_UPLOAD_FILE_PATH;
-        File uploadFilePath = new File(filePath);
-        if (!uploadFilePath.exists())
-            uploadFilePath.mkdirs();
 
         StringBuffer resultMsg = new StringBuffer();
-
         for (int i = 0; i < files.size(); ++i) {
             file = files.get(i);
             if (!file.isEmpty()) {
@@ -148,7 +160,8 @@ public class FileController {
                     resultMsg.append(fileName + " 上传失败");
                 }
             } else {
-                resultMsg.append(i + " because the file was empty.");
+//                resultMsg.append(i + " because the file was empty.");
+                resultMsg.append(" because the file was empty.");
             }
         }
         if (resultMsg.length() == 0)

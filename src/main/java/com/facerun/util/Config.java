@@ -6,5 +6,6 @@ package com.facerun.util;
 public class Config {
     public static final int pageNum = 1;
     public static final int pageSize = 20;
-    public static final String DEFAULT_UPLOAD_FILE_PATH = "/Users/kongwei/KongWeiUpload/";
+    //    public static final String DEFAULT_UPLOAD_FILE_PATH = "/Users/kongwei/KongWeiUpload/";
+    public static final String DEFAULT_UPLOAD_FILE_PATH = "G://UpLoadPath/";
 }
