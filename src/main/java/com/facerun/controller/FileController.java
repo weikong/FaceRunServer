@@ -94,7 +94,8 @@ public class FileController extends AbsController {
         if (fileName != null) {
             String filePath = Config.DEFAULT_UPLOAD_FILE_PATH;
             File file = new File(filePath, fileName);
-            FileUtil.downloadFile(file, fileName, response);
+            if (file.exists() && file.length() > 0)
+                FileUtil.downloadFile(file, fileName, response);
         }
         return;
     }
@@ -102,7 +103,7 @@ public class FileController extends AbsController {
     //多文件上传
     @RequestMapping(value = "/batch/upload", method = RequestMethod.POST)
     @ResponseBody
-    public Object handleFileUpload(HttpServletRequest request) {
+    public Object handleFileUpload(@RequestParam Map params, HttpServletRequest request) {
         List<MultipartFile> files = ((MultipartHttpServletRequest) request)
                 .getFiles("file");
         if (files != null && files.size() > 0) {
@@ -131,10 +132,12 @@ public class FileController extends AbsController {
             if (!file.isEmpty()) {
                 String fileName = "";
                 try {
-                    // 解决中文问题，liunx下中文路径，图片显示问题
-                    // fileName = UUID.randomUUID() + suffixName;
                     fileName = file.getOriginalFilename();
-                    File dest = new File(filePath + fileName);
+                    // 获取文件的后缀名
+                    String suffixName = fileName.substring(fileName.lastIndexOf("."));
+                    // 解决中文问题，liunx下中文路径，图片显示问题
+                    String mFileName = UUID.randomUUID() + suffixName;
+                    File dest = new File(filePath + mFileName);
                     // 检测是否存在目录
                     if (!dest.getParentFile().exists()) {
                         dest.getParentFile().mkdirs();
@@ -143,21 +146,24 @@ public class FileController extends AbsController {
                     resultMsg.append(fileName + ",");
                 } catch (IllegalStateException e) {
                     e.printStackTrace();
-                    logger.info("上传失败");
+                    logger.info("File upload fail");
                     return ajax(Code.FILE_UPLOAD_FAIL);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    logger.info("上传失败");
+                    logger.info("File upload fail");
                     return ajax(Code.FILE_UPLOAD_FAIL);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    logger.info("上传失败");
+                    logger.info("File upload fail");
                     return ajax(Code.FILE_UPLOAD_FAIL);
                 }
             } else {
+                logger.info("File is empty");
                 return ajax(Code.FILE_EMPTY);
             }
         }
+        if (resultMsg.length() > 0)
+            resultMsg.setLength(resultMsg.length() - 1);
         return ajax(resultMsg.toString());
     }
 }
