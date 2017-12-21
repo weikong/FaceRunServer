@@ -55,6 +55,10 @@
         <table tableName="circle" domainObjectName="Circle">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
+        <!--fit数据表-->
+        <table tableName="fit" domainObjectName="Fit">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
     </context>
 
 </generatorConfiguration>

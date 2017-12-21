@@ -5,8 +5,8 @@
     <resultMap id="BaseResultMap" type="com.facerun.bean.Circle">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="account_id" jdbcType="BIGINT" property="accountId"/>
-        <result column="create_time" jdbcType="DATE" property="createTime"/>
-        <result column="modify_time" jdbcType="DATE" property="modifyTime"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
     </resultMap>
 
     <select id="getCircleList" parameterType="java.util.Map" resultMap="BaseResultMap">

@@ -143,7 +143,7 @@ public class FileController extends AbsController {
                         dest.getParentFile().mkdirs();
                     }
                     file.transferTo(dest);
-                    resultMsg.append(fileName + ",");
+                    resultMsg.append(mFileName + ",");
                 } catch (IllegalStateException e) {
                     e.printStackTrace();
                     logger.info("File upload fail");
