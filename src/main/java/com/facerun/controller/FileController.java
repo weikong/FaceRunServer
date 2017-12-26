@@ -1,5 +1,6 @@
 package com.facerun.controller;
 
+import com.facerun.bean.FileUploadImageBean;
 import com.facerun.util.Code;
 import com.facerun.util.Config;
 import com.facerun.util.FileUtil;
@@ -100,6 +101,29 @@ public class FileController extends AbsController {
         return;
     }
 
+    //文件下载相关代码
+    @RequestMapping("/download_scale_file")
+    public void downloadScaleFile(@RequestParam Map map, HttpServletResponse response) {
+        String fileName = MapUtils.getString(map, "filename", "");
+        if (fileName != null) {
+            String filePath = Config.DEFAULT_UPLOAD_FILE_PATH;
+            File file = new File(filePath, fileName);
+            if (file.exists() && file.length() > 0) {
+                String suffixName = fileName.substring(fileName.lastIndexOf("."));
+                String name = fileName.substring(0, fileName.lastIndexOf("."));
+                String dist = filePath + name + "_thumb" + suffixName;
+                File distFile = new File(dist);
+                if (distFile != null) {
+                    if (!distFile.exists() || distFile.length() <= 0) {
+                        FileUtil.cropImage(file.getAbsolutePath(), dist);
+                    }
+                }
+                FileUtil.downloadFile(distFile, name + "_thumb" + suffixName, response);
+            }
+        }
+        return;
+    }
+
     //多文件上传
     @RequestMapping(value = "/batch/upload", method = RequestMethod.POST)
     @ResponseBody
@@ -124,26 +148,38 @@ public class FileController extends AbsController {
         }
         MultipartFile file = null;
         BufferedOutputStream stream = null;
+        List<FileUploadImageBean> fileList = new ArrayList<>();
         // 文件上传后的路径
         String filePath = Config.DEFAULT_UPLOAD_FILE_PATH;
         StringBuffer resultMsg = new StringBuffer();
         for (int i = 0; i < files.size(); ++i) {
             file = files.get(i);
             if (!file.isEmpty()) {
+                FileUploadImageBean bean = new FileUploadImageBean();
                 String fileName = "";
                 try {
                     fileName = file.getOriginalFilename();
                     // 获取文件的后缀名
                     String suffixName = fileName.substring(fileName.lastIndexOf("."));
                     // 解决中文问题，liunx下中文路径，图片显示问题
-                    String mFileName = UUID.randomUUID() + suffixName;
+                    String strUUID = UUID.randomUUID().toString();
+                    String mFileName = strUUID + suffixName;
                     File dest = new File(filePath + mFileName);
                     // 检测是否存在目录
                     if (!dest.getParentFile().exists()) {
                         dest.getParentFile().mkdirs();
                     }
+                    long t1 = System.currentTimeMillis();
                     file.transferTo(dest);
-                    resultMsg.append(mFileName + ",");
+                    long t2 = System.currentTimeMillis();
+                    logger.error("文件上传耗时：" + (t2 - t1));
+                    bean.setFileName(fileName);
+                    bean.setFileNameMD5(mFileName);
+                    bean.setSuffix(suffixName);
+                    bean.setFileNameThumb(strUUID + "_thumb" + suffixName);
+//                    FileUtil.reduceImg(dest.getAbsolutePath(), filePath + bean.getFileNameThumb());
+                    FileUtil.cropImage(dest.getAbsolutePath(), filePath + bean.getFileNameThumb());
+                    fileList.add(bean);
                 } catch (IllegalStateException e) {
                     e.printStackTrace();
                     logger.info("File upload fail");
@@ -164,6 +200,6 @@ public class FileController extends AbsController {
         }
         if (resultMsg.length() > 0)
             resultMsg.setLength(resultMsg.length() - 1);
-        return ajax(resultMsg.toString());
+        return ajax(fileList);
     }
 }

@@ -99,6 +99,12 @@
 			<artifactId>pagehelper</artifactId>
 			<version>${pagehelper.version}</version>
 		</dependency>
+		<!-- 图片缩略图 -->
+		<dependency>
+			<groupId>net.coobird</groupId>
+			<artifactId>thumbnailator</artifactId>
+			<version>0.4.8</version>
+		</dependency>
     </dependencies>
 
 	<build>
@@ -133,6 +139,11 @@
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
+
+					<!--<compilerArguments>-->
+						<!--<verbose />-->
+						<!--<bootclasspath>${java.home}\lib\rt.jar;${java.home}\lib\jce.jar</bootclasspath>-->
+					<!--</compilerArguments>-->
 				</configuration>
 			</plugin>
 			<plugin>
