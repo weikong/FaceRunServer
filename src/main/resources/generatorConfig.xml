@@ -59,6 +59,39 @@
         <table tableName="fit" domainObjectName="Fit">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
+        <!--PetBrowseHistory浏览历史数据表-->
+        <table tableName="petbrowsehistory" domainObjectName="PetBrowseHistory">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <!--PetComment评论数据表-->
+        <table tableName="petcomment" domainObjectName="PetComment">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <!--PetProduct商品数据表-->
+        <table tableName="petproduct" domainObjectName="PetProduct">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <!--PetCategary分类数据表-->
+        <table tableName="petcategary" domainObjectName="PetCategary">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+
+        <!--PetDating 约会数据表-->
+        <table tableName="petdating" domainObjectName="PetDating">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <!--PetLookfor 寻找数据表-->
+        <table tableName="petlookfor" domainObjectName="PetLookfor">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <!--PetProductCategary 产品分类数据表-->
+        <table tableName="petproductcategary" domainObjectName="PetProductCategary">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <!--PetService 服务数据表-->
+        <table tableName="petservice" domainObjectName="PetService">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
     </context>
 
 </generatorConfiguration>

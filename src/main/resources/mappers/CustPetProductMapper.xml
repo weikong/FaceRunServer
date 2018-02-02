@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.facerun.dao.CustPetProductMapper">
+
+    <resultMap id="BaseResultMap" type="com.facerun.bean.PetProduct">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="html_url" jdbcType="VARCHAR" property="htmlUrl"/>
+        <result column="comment_id" jdbcType="BIGINT" property="commentId"/>
+        <result column="shop_id" jdbcType="BIGINT" property="shopId"/>
+        <result column="shop_name" jdbcType="VARCHAR" property="shopName"/>
+    </resultMap>
+
+    <select id="getProductList" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT
+        pp.*
+        FROM petproduct pp
+        ORDER BY pp.time DESC
+        <if test="beginNum !=null">
+            limit #{beginNum},#{limitSize}
+        </if>
+    </select>
+</mapper>
