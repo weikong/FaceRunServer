@@ -30,7 +30,7 @@ public class PetDatingController extends AbsController {
     @ResponseBody
     public Object query(@RequestParam Map params, Model model) {
         try {
-            return ajax(petDatingService.queryAllDating());
+            return ajax(petDatingService.queryDating(params));
         } catch (BizException e) {
             log.error(e.getMessage());
             return ajax(e);

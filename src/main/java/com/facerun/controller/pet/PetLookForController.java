@@ -30,7 +30,7 @@ public class PetLookForController extends AbsController {
     @ResponseBody
     public Object query(@RequestParam Map params, Model model) {
         try {
-            return ajax(petLookForService.queryAllLookfor());
+            return ajax(petLookForService.queryLookfor(params));
         } catch (BizException e) {
             log.error(e.getMessage());
             return ajax(e);
