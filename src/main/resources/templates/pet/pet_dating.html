@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <title>Pet Dating</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <h2>Pet Dating</h2>
+    <table>
+
+        <tr th:each="prod : ${Dating}">
+            <td th:text="${prod.name}">Onions</td>
+            <td th:text="${prod.type}">2.41</td>
+            <td th:text="${prod.description}">yes</td>
+        </tr>
+    </table>
+</body>
+</html>

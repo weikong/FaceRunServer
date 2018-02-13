@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * 用户相关操作
  */
-@RequestMapping("")
+@RequestMapping("test_rest")
 @RestController
 public class TestRestController extends AbsController {
 
