@@ -3,17 +3,53 @@
 <head>
 
     <title>Pet Dating</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-</head>
-<body>
-    <h2>Pet Dating</h2>
-    <table>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 
-        <tr th:each="prod : ${Dating}">
-            <td th:text="${prod.name}">Onions</td>
-            <td th:text="${prod.type}">2.41</td>
-            <td th:text="${prod.description}">yes</td>
-        </tr>
-    </table>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>背景图片自适应</title>
+    <style type="text/css">html, body {
+        padding: 0;
+        margin: 0;
+    }
+
+    div {
+        width: 100%;
+        height: 100%;
+        /*background: url('images/slide_01_640x340.jpg') no-repeat;*/
+        background-size: 100% 100%;
+    }
+
+    /*图片自适应手机屏幕*/
+    img {
+        height: auto;
+        width: auto \9;
+        width: 100%;
+    }
+    /*视频自适应手机屏幕*/
+    video {
+        height: auto;
+        width: auto \9;
+        width: 100%;
+    }
+    </style>
+</head>
+
+<body>
+
+<div>
+    <video th:src="@{/download_file?filename=movies/test1.mp4}" th:controls="controls"/>
+</div>
+<div>
+<img th:src="@{/download_file?filename=20180205144803-xiyu.jpg}"/>
+<table>
+
+    <tr th:each="prod : ${Dating}">
+        <td th:text="${prod.name}">Onions</td>
+        <td th:text="${prod.type}">2.41</td>
+        <td th:text="${prod.description}">yes</td>
+    </tr>
+</table>
+<img th:src="@{/download_file?filename=fit/kuanjufuwocheng.gif}"/>
+</div>
 </body>
 </html>
