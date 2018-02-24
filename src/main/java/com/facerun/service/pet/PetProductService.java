@@ -3,6 +3,8 @@ package com.facerun.service.pet;
 import com.alibaba.fastjson.JSONObject;
 import com.facerun.bean.Account;
 import com.facerun.bean.PetProduct;
+import com.facerun.bean.PetProductFood;
+import com.facerun.dao.CustPetProductFoodMapper;
 import com.facerun.dao.PetProductMapper;
 import com.facerun.dao.CustPetProductMapper;
 import com.facerun.exception.BizException;
@@ -33,6 +35,8 @@ public class PetProductService {
     private PetProductMapper petProductMapper;
     @Autowired
     private CustPetProductMapper custPetProductMapper;
+    @Autowired
+    private CustPetProductFoodMapper custPetProductFoodMapper;
 
     public List<PetProduct> query(Map params) {
         Map paramsWrapper = new HashMap();
@@ -42,6 +46,17 @@ public class PetProductService {
         paramsWrapper.put("beginNum", beginNum);
         paramsWrapper.put("limitSize", pageSize);
         List<PetProduct> list = custPetProductMapper.getProductList(paramsWrapper);
+        return list;
+    }
+
+    public List<PetProductFood> queryFood(Map params) {
+        Map paramsWrapper = new HashMap();
+        int pageSize = Integer.valueOf(params.get("pageSize") == null ? "20" : params.get("pageSize").toString());
+        int pageNum = Integer.valueOf(params.get("pageNum") == null ? "1" : params.get("pageNum").toString());
+        int beginNum = pageSize * (pageNum - 1);
+        paramsWrapper.put("beginNum", beginNum);
+        paramsWrapper.put("limitSize", pageSize);
+        List<PetProductFood> list = custPetProductFoodMapper.getProductFoodList(paramsWrapper);
         return list;
     }
 

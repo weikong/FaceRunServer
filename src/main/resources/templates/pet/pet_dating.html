@@ -19,6 +19,13 @@
         background-size: 100% 100%;
     }
 
+    tr {
+        width: 100%;
+        height: 100%;
+        background: blueviolet;
+        /*background: url('images/slide_01_640x340.jpg') no-repeat;*/
+    }
+
     /*图片自适应手机屏幕*/
     img {
         height: auto;
@@ -43,10 +50,18 @@
 <img th:src="@{/download_file?filename=20180205144803-xiyu.jpg}"/>
 <table>
 
-    <tr th:each="prod : ${Dating}">
-        <td th:text="${prod.name}">Onions</td>
-        <td th:text="${prod.type}">2.41</td>
-        <td th:text="${prod.description}">yes</td>
+    <tr th:each="prod : ${Dating}" >
+        <td th:cellpadding="10">
+            <div>
+                <img th:src="@{/download_file?filename=20180205144803-xiyu.jpg}"/>
+                <p th:text="${prod.name}" />
+                <p th:text="${prod.type}" />
+                <p th:text="${prod.description}" />
+            </div>
+        </td>
+        <!--<td th:text="${prod.name}">Onions</td>-->
+        <!--<td th:text="${prod.type}">2.41</td>-->
+        <!--<td th:text="${prod.description}">yes</td>-->
     </tr>
 </table>
 <img th:src="@{/download_file?filename=fit/kuanjufuwocheng.gif}"/>

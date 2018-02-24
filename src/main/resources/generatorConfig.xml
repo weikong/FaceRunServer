@@ -92,6 +92,15 @@
         <table tableName="petservice" domainObjectName="PetService">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
+
+        <!--PetProductFood 服务数据表-->
+        <table tableName="petproductfood" domainObjectName="PetProductFood">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <!--PetCompany 服务数据表-->
+        <table tableName="petcompany" domainObjectName="PetCompany">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
     </context>
 
 </generatorConfiguration>

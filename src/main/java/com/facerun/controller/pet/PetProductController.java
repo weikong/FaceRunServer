@@ -40,6 +40,20 @@ public class PetProductController extends AbsController {
         }
     }
 
+    @PostMapping("/query_food")
+    @ResponseBody
+    public Object queryFood(@RequestParam Map params, Model model) {
+        try {
+            return ajax(petProductService.queryFood(params));
+        } catch (BizException e) {
+            log.error(e.getMessage());
+            return ajax(e);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ajax(Code.FAIL);
+        }
+    }
+
     @PostMapping("/insert")
     @ResponseBody
     public Object insert(@RequestParam Map params, Model model) {
