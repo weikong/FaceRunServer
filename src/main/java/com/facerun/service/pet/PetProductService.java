@@ -65,6 +65,9 @@ public class PetProductService {
         Account account = accountService.accountSelect(account_id);
         if (account == null)
             throw new BizException(Code.USER_NOT_EXIST);
+        /**
+         * 限制没有权限的用户修改数据
+         * */
         String data = MapUtils.getString(params, "data", "");
         PetProduct petProduct = JSONObject.parseObject(data, PetProduct.class);
         int insert = petProductMapper.insertSelective(petProduct);
