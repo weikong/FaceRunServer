@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.facerun.dao.CustFitPlanMapper">
+
+    <select id="getFitPlan" parameterType="java.util.Map" resultType="com.facerun.bean.Record">
+        SELECT
+        fp.id,fp.fitid,fp.name,fp.planid,fp.times,fp.counts,fp.countstype,fp.accountid,fp.createtime,fp.sort,f.title,f.description,f.image
+        FROM fitplan fp
+        INNER JOIN fit f ON f.id = fp.fitid
+        WHERE fp.accountid=-999
+        ORDER BY fp.planid,fp.sort ASC
+    </select>
+</mapper>

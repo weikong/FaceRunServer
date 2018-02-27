@@ -38,4 +38,18 @@ public class FitController extends AbsController {
             return ajax(Code.FAIL);
         }
     }
+
+    @PostMapping("/query_fit_plan")
+    @ResponseBody
+    public Object queryFitPlan(@RequestParam Map params, Model model) {
+        try {
+            return ajax(fitService.querySysFitPlan(params));
+        } catch (BizException e) {
+            log.error(e.getMessage());
+            return ajax(e);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ajax(Code.FAIL);
+        }
+    }
 }

@@ -59,6 +59,10 @@
         <table tableName="fit" domainObjectName="Fit">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
+        <!--fitplan数据表-->
+        <table tableName="fitplan" domainObjectName="FitPlan">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
         <!--PetBrowseHistory浏览历史数据表-->
         <table tableName="petbrowsehistory" domainObjectName="PetBrowseHistory">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
