@@ -37,10 +37,10 @@ public class CircleService {
     private CustCircleMapper custCircleMapper;
 
     public List<Circle> circleQuery(Map params) {
-        int account_id = MapUtils.getInteger(params, "account_id", 0);
-        Account account = accountService.accountSelect(account_id);
-        if (account == null)
-            throw new BizException(Code.USER_NOT_EXIST);
+        int account_id = MapUtils.getInteger(params, "account_id", -999);
+//        Account account = accountService.accountSelect(account_id);
+//        if (account == null)
+//            throw new BizException(Code.USER_NOT_EXIST);
         Map paramsWrapper = new HashMap();
         int pageSize = Integer.valueOf(params.get("pageSize") == null ? "20" : params.get("pageSize").toString());
         int pageNum = Integer.valueOf(params.get("pageNum") == null ? "1" : params.get("pageNum").toString());

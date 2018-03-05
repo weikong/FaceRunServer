@@ -53,10 +53,8 @@ public class FitService {
         while (it.hasNext()) {
             Map.Entry e = (Map.Entry) it.next();
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("planName",e.getKey());
-            jsonObject.put("planList",e.getValue());
-//            Map<Object, Object> map = new HashMap<>();
-//            map.put(e.getKey(), e.getValue());
+            jsonObject.put("planName", e.getKey());
+            jsonObject.put("planList", e.getValue());
             list.add(jsonObject);
         }
         return list;

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,7 +44,8 @@ public class FitController extends AbsController {
     @ResponseBody
     public Object queryFitPlan(@RequestParam Map params, Model model) {
         try {
-            return ajax(fitService.querySysFitPlan(params));
+            List<Object> list = fitService.querySysFitPlan(params);
+            return ajax(list);
         } catch (BizException e) {
             log.error(e.getMessage());
             return ajax(e);
