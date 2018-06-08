@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>背景图片自适应</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <script type="text/javascript" th:inline="javascript">
+        window.onload = function () {
+            var url = "/circle/query";
+            var request = new XMLHttpRequest();
+            request.onload = function () {
+                if (request.status == 200) {
+                    displayCircleContent(request.responseText)
+                }
+            };
+            request.open("POST", url);
+            request.send(null);
+        }
+        function displayCircleContent(content) {
+            var p = document.getElementById("content");
+            var bigImg = document.createElement("img");     //创建一个img元素
+            bigImg.src = "http://localhost:9090/download_file?filename=20180205144803-xiyu.jpg";   //给img元素的src属性赋值
+            p.appendChild(bigImg);      //为dom添加子元素img
+        }
+    </script>
+    <style type="text/css">html, body {
+        padding: 0;
+        margin: 0;
+    }
+
+    div {
+        width: 100%;
+        height: 100%;
+        /*background: url('images/slide_01_640x340.jpg') no-repeat;*/
+        background-size: 100% 100%;
+    }
+
+    /*tr {
+        width: 100%;
+        height: 100%;
+        background:darkgrey;
+        !*background: url('images/slide_01_640x340.jpg') no-repeat;*!
+    }*/
+
+    /*图片自适应手机屏幕*/
+    img {
+        height: auto;
+        width: auto \9;
+        width: 100%;
+    }
+
+    /*视频自适应手机屏幕*/
+    video {
+        height: auto;
+        width: auto \9;
+        width: 100%;
+    }
+
+    /*视频自适应手机屏幕*/
+    table {
+        height: auto;
+        width: auto \9;
+        width: 100%;
+    }
+    </style>
+</head>
+
+<body>
+
+<div id="content">
+
+</div>
+<div>
+    <video th:src="@{/download_file?filename=movies/test1.mp4}" th:controls="controls"/>
+</div>
+<div>
+    <img th:src="@{/download_file?filename=20180205144803-xiyu.jpg}"/>
+    <table>
+        <tr>
+            <td th:text="Onions">Onions</td>
+            <td th:text="2.41">2.41</td>
+        </tr>
+        <tr>
+            <td th:text="Onions-2">Onions-2</td>
+            <td th:text="2.41-2">2.41-2</td>
+        </tr>
+    </table>
+    <img th:src="@{/download_file?filename=fit/kuanjufuwocheng.gif}"/>
+</div>
+</body>
+</html>

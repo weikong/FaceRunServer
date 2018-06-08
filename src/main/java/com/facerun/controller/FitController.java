@@ -1,6 +1,7 @@
 package com.facerun.controller;
 
 
+import com.facerun.bean.Fit;
 import com.facerun.exception.BizException;
 import com.facerun.service.CircleService;
 import com.facerun.service.FitService;
@@ -30,7 +31,9 @@ public class FitController extends AbsController {
     @ResponseBody
     public Object query(@RequestParam Map params, Model model) {
         try {
-            return ajax(fitService.queryFit(params));
+            List<Fit> list = fitService.queryFit(params);
+            log.error("list.size() == " + list.size());
+            return ajax(list);
         } catch (BizException e) {
             log.error(e.getMessage());
             return ajax(e);

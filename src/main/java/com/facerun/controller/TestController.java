@@ -31,6 +31,7 @@ public class TestController extends AbsController {
     private RunMapper runMapper;
     @Autowired
     private PetDatingMapper petDatingMapper;
+
     /**
      * 用户数据
      */
@@ -46,7 +47,15 @@ public class TestController extends AbsController {
     @GetMapping("pet_dating")
     public String runDating(@RequestParam Map params, Model model) {
         List<PetDating> list = petDatingMapper.selectByExample(null);
-        model.addAttribute("Dating",list);
+        model.addAttribute("Dating", list);
         return "pet/pet_dating";
+    }
+
+    /**
+     * 宠物约会
+     */
+    @RequestMapping("snack_wel")
+    public String runSnackWel(@RequestParam Map params, Model model) {
+        return "snack/welcome";
     }
 }
