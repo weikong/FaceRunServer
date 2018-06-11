@@ -19,9 +19,31 @@
         }
         function displayCircleContent(content) {
             var p = document.getElementById("content");
-            var bigImg = document.createElement("img");     //创建一个img元素
-            bigImg.src = "http://localhost:9090/download_file?filename=20180205144803-xiyu.jpg";   //给img元素的src属性赋值
-            p.appendChild(bigImg);      //为dom添加子元素img
+            var dataJson = JSON.parse(content);
+            var datas = dataJson.data;
+            for (var i = 0; i < datas.length; i++) {
+                var div2 = document.createElement("div");     //创建一个div元素
+                var h2 = document.createElement("h4");     //创建一个h3元素
+                h2.textContent = datas[i].description;
+                var bigImg = document.createElement("img");     //创建一个img元素
+                var photos = datas[i].photos;
+                if (photos != null && photos.trim() != '') {
+                    var photoArray = photos.split(",");
+                    if (photoArray != null && photoArray.length > 0) {
+                        var item = photoArray[0];
+                        if (item != null && (item.startsWith("http://") || item.startsWith("https://"))) {
+                            bigImg.src = item;   //给img元素的src属性赋值
+                        } else {
+//                            bigImg.src = "http://localhost:9090/download_file?filename=" + photoArray[0];   //给img元素的src属性赋值
+                            bigImg.src = "http://localhost:9090/file/" + photoArray[0]+".";   //给img元素的src属性赋值
+                        }
+                    }
+                }
+//                bigImg.src = "http://localhost:9090/download_file?filename=20180205144803-xiyu.jpg";   //给img元素的src属性赋值
+                div2.appendChild(bigImg);      //为dom添加子元素img
+                div2.appendChild(h2);      //为dom添加子元素h3
+                p.appendChild(div2);      //为dom添加子元素h3
+            }
         }
     </script>
     <style type="text/css">html, body {
@@ -32,8 +54,9 @@
     div {
         width: 100%;
         height: 100%;
-        /*background: url('images/slide_01_640x340.jpg') no-repeat;*/
+        /*!*background: url('images/slide_01_640x340.jpg') no-repeat;*!*/
         background-size: 100% 100%;
+        position: relative;
     }
 
     /*tr {
@@ -42,6 +65,27 @@
         background:darkgrey;
         !*background: url('images/slide_01_640x340.jpg') no-repeat;*!
     }*/
+    span {
+        display: table-cell;
+        vertical-align: middle
+    }
+
+    h4 {
+        position: absolute;
+        left: 0px;
+        right: 0px;
+        bottom: -16px;
+        color: white;
+        background-color: rgba(0, 0, 0, 0.4);
+        width: 100%;
+        height: auto;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        vertical-align: middle;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 
     /*图片自适应手机屏幕*/
     img {
@@ -71,22 +115,17 @@
 <div id="content">
 
 </div>
-<div>
-    <video th:src="@{/download_file?filename=movies/test1.mp4}" th:controls="controls"/>
-</div>
-<div>
-    <img th:src="@{/download_file?filename=20180205144803-xiyu.jpg}"/>
-    <table>
-        <tr>
-            <td th:text="Onions">Onions</td>
-            <td th:text="2.41">2.41</td>
-        </tr>
-        <tr>
-            <td th:text="Onions-2">Onions-2</td>
-            <td th:text="2.41-2">2.41-2</td>
-        </tr>
-    </table>
-    <img th:src="@{/download_file?filename=fit/kuanjufuwocheng.gif}"/>
-</div>
+<!--<div>-->
+<!--<table>-->
+<!--<tr>-->
+<!--<td th:text="Onions">Onions</td>-->
+<!--<td th:text="2.41">2.41</td>-->
+<!--</tr>-->
+<!--<tr>-->
+<!--<td th:text="Onions-2">Onions-2</td>-->
+<!--<td th:text="2.41-2">2.41-2</td>-->
+<!--</tr>-->
+<!--</table>-->
+<!--</div>-->
 </body>
 </html>

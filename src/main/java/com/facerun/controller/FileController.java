@@ -102,6 +102,19 @@ public class FileController extends AbsController {
     }
 
     //文件下载相关代码
+    @RequestMapping("/file/{fileName}")
+    public void downloadFile(@PathVariable("fileName") String fileName, @RequestParam Map map, HttpServletResponse response) {
+//        String fileName = MapUtils.getString(map, "filename", "");
+        if (fileName != null) {
+            String filePath = Config.DEFAULT_UPLOAD_FILE_PATH;
+            File file = new File(filePath, fileName);
+            if (file.exists() && file.length() > 0)
+                FileUtil.downloadFile(file, fileName, response);
+        }
+        return;
+    }
+
+    //文件下载相关代码
     @RequestMapping("/download_scale_file")
     public void downloadScaleFile(@RequestParam Map map, HttpServletResponse response) {
         String fileName = MapUtils.getString(map, "filename", "");
