@@ -18,4 +18,17 @@
             limit #{beginNum},#{limitSize}
         </if>
     </select>
+
+    <select id="getCircleByIdList" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT
+        c.*
+        FROM circle c
+        <where>
+            c.account_id = #{account_id}
+        </where>
+        ORDER BY c.create_time DESC
+        <if test="beginNum !=null">
+            limit #{beginNum},#{limitSize}
+        </if>
+    </select>
 </mapper>

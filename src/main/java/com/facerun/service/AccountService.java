@@ -32,13 +32,13 @@ public class AccountService {
     private AccountMapper accountMapper;
 
     public Account login(Map params) {
-        String strAccount = MapUtils.getString(params, "Account", "");
+        String strAccount = MapUtils.getString(params, "account", "");
         if (StringUtils.isEmpty(strAccount))
             throw new BizException(Code.ERROR_USER_NAME_EMPTY);
         Account account = accountSelect(strAccount);
         if (account == null)
             throw new BizException(Code.USER_NOT_EXIST);
-        String strPassword = MapUtils.getString(params, "Password", "");
+        String strPassword = MapUtils.getString(params, "password", "");
         if (StringUtils.isEmpty(strPassword))
             throw new BizException(Code.ERROR_USER_PSD_EMPTY);
         AccountExample example = new AccountExample();
@@ -83,6 +83,38 @@ public class AccountService {
         int insert = accountMapper.insertSelective(account);
         if (insert != 1)
             throw new BizException(Code.FAIL_DATABASE_INSERT);
+    }
+
+    public Account registerUser(Map params) {
+        int type = MapUtils.getInteger(params, "type", 1);
+        int status = MapUtils.getInteger(params, "status", 1);
+        String name = MapUtils.getString(params, "name", "");
+        String strAccount = MapUtils.getString(params, "account", "");
+        String password = MapUtils.getString(params, "password", "");
+        Date create_at = new Date();
+        if (StringUtils.isEmpty(strAccount))
+            throw new BizException(Code.DATA_ERROR);
+        if (StringUtils.isEmpty(name)){
+            if (strAccount.contains("@")){
+                name = strAccount.split("@")[0];
+            } else {
+                name = strAccount;
+            }
+        }
+        Account account2 = accountSelect(strAccount);
+        if (account2 != null && account2.getId() > 0)
+            throw new BizException(Code.USER_EXIST);
+        Account account = new Account();
+        account.setName(name);
+        account.setAccount(strAccount);
+        account.setPassword(password);
+        account.setType(type);
+        account.setStatus(status);
+        account.setCreateAt(create_at);
+        int insert = accountMapper.insertSelective(account);
+        if (insert != 1)
+            throw new BizException(Code.FAIL_DATABASE_INSERT);
+        return account;
     }
 
     public Account accountSelect(Map params) {

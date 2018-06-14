@@ -44,6 +44,20 @@ public class CircleController extends AbsController {
         }
     }
 
+    @PostMapping("/query_by_id")
+    @ResponseBody
+    public Object queryById(@RequestParam Map params, Model model) {
+        try {
+            return ajax(circleService.circleQueryById(params));
+        } catch (BizException e) {
+            log.error(e.getMessage());
+            return ajax(e);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ajax(Code.FAIL);
+        }
+    }
+
     @PostMapping("/insert")
     @ResponseBody
     public Object insert(@RequestParam Map params, Model model) {

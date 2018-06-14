@@ -34,8 +34,8 @@
                         if (item != null && (item.startsWith("http://") || item.startsWith("https://"))) {
                             bigImg.src = item;   //给img元素的src属性赋值
                         } else {
-//                            bigImg.src = "http://localhost:9090/download_file?filename=" + photoArray[0];   //给img元素的src属性赋值
-                            bigImg.src = "http://localhost:9090/file/" + photoArray[0]+".";   //给img元素的src属性赋值
+                            bigImg.src = "http://172.16.0.138:9090/download_file?filename=" + photoArray[0];   //给img元素的src属性赋值
+//                            bigImg.src = "http://localhost:9090/file/" + photoArray[0]+".";   //给img元素的src属性赋值
                         }
                     }
                 }

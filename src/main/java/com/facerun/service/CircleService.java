@@ -37,7 +37,7 @@ public class CircleService {
     private CustCircleMapper custCircleMapper;
 
     public List<Circle> circleQuery(Map params) {
-        int account_id = MapUtils.getInteger(params, "account_id", -999);
+//        int account_id = MapUtils.getInteger(params, "account_id", -999);
 //        Account account = accountService.accountSelect(account_id);
 //        if (account == null)
 //            throw new BizException(Code.USER_NOT_EXIST);
@@ -48,6 +48,22 @@ public class CircleService {
         paramsWrapper.put("beginNum", beginNum);
         paramsWrapper.put("limitSize", pageSize);
         List<Circle> list = custCircleMapper.getCircleList(paramsWrapper);
+        return list;
+    }
+
+    public List<Circle> circleQueryById(Map params) {
+        int account_id = MapUtils.getInteger(params, "account_id", -999);
+        Account account = accountService.accountSelect(account_id);
+        if (account == null)
+            throw new BizException(Code.USER_NOT_EXIST);
+        Map paramsWrapper = new HashMap();
+        int pageSize = Integer.valueOf(params.get("pageSize") == null ? "20" : params.get("pageSize").toString());
+        int pageNum = Integer.valueOf(params.get("pageNum") == null ? "1" : params.get("pageNum").toString());
+        int beginNum = pageSize * (pageNum - 1);
+        paramsWrapper.put("beginNum", beginNum);
+        paramsWrapper.put("limitSize", pageSize);
+        paramsWrapper.put("account_id", account_id);
+        List<Circle> list = custCircleMapper.getCircleByIdList(paramsWrapper);
         return list;
     }
 

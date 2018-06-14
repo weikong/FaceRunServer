@@ -16,4 +16,9 @@ public interface CustCircleMapper {
      */
     List<Circle> getCircleList(Map params);
 
+    /**
+     * @return
+     */
+    List<Circle> getCircleByIdList(Map params);
+
 }

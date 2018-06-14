@@ -95,6 +95,20 @@ public class AccountController extends AbsController {
         }
     }
 
+    @PostMapping("/registerUser")
+    @ResponseBody
+    public Object registerUser(@RequestParam Map params, Model model) {
+        try {
+            return ajax(accountService.registerUser(params));
+        } catch (BizException e) {
+            log.error(e.getMessage());
+            return ajax(e);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ajax(Code.FAIL);
+        }
+    }
+
     /**
      * 查询用户
      */
