@@ -136,4 +136,20 @@ public class AccountService {
             return list.get(0);
         return null;
     }
+
+    public Account accountEdit(Map params) {
+        String strAccount = MapUtils.getString(params, "account", "");
+        String name = MapUtils.getString(params, "name", "");
+        Account account = accountSelect(strAccount);
+        if (account == null || account.getId() <= 0)
+            throw new BizException(Code.USER_EXIST);
+        if (StringUtils.isNotEmpty(name)){
+            account.setName(name);
+            int update = accountMapper.updateByPrimaryKey(account);
+            if (update != 1)
+                throw new BizException(Code.FAIL_DATABASE_INSERT);
+        }
+        return account;
+    }
+
 }

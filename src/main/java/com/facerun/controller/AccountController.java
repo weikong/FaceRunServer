@@ -159,4 +159,18 @@ public class AccountController extends AbsController {
         List<Record> list = custUserMapper.getUsers();
         return ajax(list);
     }
+
+    @PostMapping("/edit")
+    @ResponseBody
+    public Object edit(@RequestParam Map params, Model model) {
+        try {
+            return ajax(accountService.accountEdit(params));
+        } catch (BizException e) {
+            log.error(e.getMessage());
+            return ajax(e);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ajax(Code.FAIL);
+        }
+    }
 }
