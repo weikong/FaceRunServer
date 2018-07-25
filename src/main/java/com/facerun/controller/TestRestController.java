@@ -7,10 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -32,7 +29,19 @@ public class TestRestController extends AbsController {
      */
     @GetMapping("run_datas1")
     public String runDatas(@RequestParam Map params, Model model) {
-        List<Run> list = runMapper.selectByExample(null);
-        return list.toString();
+//        List<Run> list = runMapper.selectByExample(null);
+//        return list.toString();
+        return "Hello world!Mr kong";
+    }
+
+    /**
+     * 用户数据
+     */
+    @PostMapping("run_datas2")
+    @ResponseBody
+    public String runDatas2(@RequestParam Map params, Model model) {
+//        List<Run> list = runMapper.selectByExample(null);
+//        return list.toString();
+        return "Hello world!Mr kong 2";
     }
 }

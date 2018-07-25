@@ -12,13 +12,18 @@ import java.util.Map;
 public interface CustCircleMapper {
 
     /**
-     * @return
+     * @return 我的好友
      */
-    List<Circle> getCircleList(Map params);
+    List<Map> getCircleList(Map params);
+
+    /**
+     * @return 查询跑友圈
+     */
+    List<Map> getCircleSearchList(Map params);
 
     /**
      * @return
      */
-    List<Circle> getCircleByIdList(Map params);
+    List<Map> getCircleByIdList(Map params);
 
 }

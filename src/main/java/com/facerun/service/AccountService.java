@@ -140,15 +140,21 @@ public class AccountService {
     public Account accountEdit(Map params) {
         String strAccount = MapUtils.getString(params, "account", "");
         String name = MapUtils.getString(params, "name", "");
+        String header = MapUtils.getString(params, "header", "");
+        String sex = MapUtils.getString(params, "sex", "");
+        String desc = MapUtils.getString(params, "desc", "");
         Account account = accountSelect(strAccount);
         if (account == null || account.getId() <= 0)
             throw new BizException(Code.USER_EXIST);
         if (StringUtils.isNotEmpty(name)){
             account.setName(name);
-            int update = accountMapper.updateByPrimaryKey(account);
-            if (update != 1)
-                throw new BizException(Code.FAIL_DATABASE_INSERT);
         }
+        if (StringUtils.isNotEmpty(header)){
+            account.setHeadPortrait(header);
+        }
+        int update = accountMapper.updateByPrimaryKey(account);
+        if (update != 1)
+            throw new BizException(Code.FAIL_DATABASE_INSERT);
         return account;
     }
 

@@ -2,24 +2,27 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.facerun.dao.CustCircleMapper">
 
-    <resultMap id="BaseResultMap" type="com.facerun.bean.Circle">
-        <id column="id" jdbcType="BIGINT" property="id"/>
-        <result column="account_id" jdbcType="BIGINT" property="accountId"/>
-        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
-        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
-    </resultMap>
-
-    <select id="getCircleList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    <select id="getCircleList" parameterType="java.util.Map" resultType="java.util.Map">
         SELECT
-        c.*
-        FROM circle c
+        c.*,a.name
+        FROM circle c LEFT JOIN account a ON c.account_id=a.id
         ORDER BY c.create_time DESC
         <if test="beginNum !=null">
             limit #{beginNum},#{limitSize}
         </if>
     </select>
 
-    <select id="getCircleByIdList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    <select id="getCircleSearchList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+        c.*,a.name
+        FROM circle c LEFT JOIN account a ON c.account_id=a.id
+        ORDER BY c.create_time DESC
+        <if test="beginNum !=null">
+            limit #{beginNum},#{limitSize}
+        </if>
+    </select>
+
+    <select id="getCircleByIdList" parameterType="java.util.Map" resultType="java.util.Map">
         SELECT
         c.*
         FROM circle c

@@ -36,7 +36,7 @@ public class CircleService {
     @Autowired
     private CustCircleMapper custCircleMapper;
 
-    public List<Circle> circleQuery(Map params) {
+    public List<Map> circleQuery(Map params) {
 //        int account_id = MapUtils.getInteger(params, "account_id", -999);
 //        Account account = accountService.accountSelect(account_id);
 //        if (account == null)
@@ -47,11 +47,22 @@ public class CircleService {
         int beginNum = pageSize * (pageNum - 1);
         paramsWrapper.put("beginNum", beginNum);
         paramsWrapper.put("limitSize", pageSize);
-        List<Circle> list = custCircleMapper.getCircleList(paramsWrapper);
+        List<Map> list = custCircleMapper.getCircleList(paramsWrapper);
         return list;
     }
 
-    public List<Circle> circleQueryById(Map params) {
+    public List<Map> circleSearchQuery(Map params) {
+        Map paramsWrapper = new HashMap();
+        int pageSize = Integer.valueOf(params.get("pageSize") == null ? "20" : params.get("pageSize").toString());
+        int pageNum = Integer.valueOf(params.get("pageNum") == null ? "1" : params.get("pageNum").toString());
+        int beginNum = pageSize * (pageNum - 1);
+        paramsWrapper.put("beginNum", beginNum);
+        paramsWrapper.put("limitSize", pageSize);
+        List<Map> list = custCircleMapper.getCircleSearchList(paramsWrapper);
+        return list;
+    }
+
+    public List<Map> circleQueryById(Map params) {
         int account_id = MapUtils.getInteger(params, "account_id", -999);
         Account account = accountService.accountSelect(account_id);
         if (account == null)
@@ -63,7 +74,7 @@ public class CircleService {
         paramsWrapper.put("beginNum", beginNum);
         paramsWrapper.put("limitSize", pageSize);
         paramsWrapper.put("account_id", account_id);
-        List<Circle> list = custCircleMapper.getCircleByIdList(paramsWrapper);
+        List<Map> list = custCircleMapper.getCircleByIdList(paramsWrapper);
         return list;
     }
 
