@@ -4,8 +4,64 @@
 
     <meta charset="UTF-8"/>
     <title>Title</title>
+
+    <style>
+        header {
+            background-color: black;
+            color: white;
+            text-align: center;
+            padding: 5px;
+        }
+
+        nav {
+            line-height: 50px;
+            background-color: #eeeeee;
+            height: 1280px;
+            width: 180px;
+            float: left;
+            padding: 10px;
+        }
+
+        section {
+            width: 600px;
+            float: left;
+            height: 1280px;
+            padding: 10px;
+        }
+
+        footer {
+            background-color: black;
+            color: white;
+            clear: both;
+            text-align: center;
+            padding: 25px;
+        }
+    </style>
 </head>
 <body>
-    <h2>Hello FaceRun!</h2>
+
+<header>
+    <h1>City Gallery</h1>
+</header>
+
+<nav>
+    <a href="http://localhost:9090/test/frame_a" target="iframe_a"><span style="font-size: 30px">爆辣</span></a><br>
+    <a href="http://localhost:9090/test/frame_b" target="iframe_a"><span style="font-size: 30px">一点点辣</span></a><br>
+    <a href="http://localhost:9090/test/frame_c" target="iframe_a"><span style="font-size: 30px">点儿都不拉</span></a><br>
+    <a href="http://localhost:9090/test/frame_c" target="iframe_a"><span style="font-size: 30px">素食</span></a><br>
+</nav>
+
+<!--<iframe src="http://localhost:9090/test/frame_a" name="iframe_a" width="80%" height="1024"></iframe>-->
+
+<section>
+    <iframe src="http://localhost:9090/test/frame_a" name="iframe_a" frameborder="0" scrolling="no"
+            height="1280px" width="600px">不支持iframe
+    </iframe>
+</section>
+
+<footer>
+    Copyright W3Schools.com
+</footer>
+
 </body>
 </html>

@@ -3,6 +3,7 @@ package com.facerun.controller;
 
 import com.facerun.bean.Run;
 import com.facerun.dao.RunMapper;
+import com.facerun.util.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,38 @@ public class TestRestController extends AbsController {
     public String runDatas(@RequestParam Map params, Model model) {
 //        List<Run> list = runMapper.selectByExample(null);
 //        return list.toString();
-        return "Hello world!Mr kong";
+        String strJson = "{\"body\"\n" +
+                ":\n" +
+                "\"儿科门诊2018-07-30张丹医生\",\n" +
+                "\"nonce_str\"\n" +
+                ":\n" +
+                "\"ffee8acfb95e40db928d6ca4dd875551\",\n" +
+                "\"notify_url\"\n" +
+                ":\n" +
+                "\"https://wechat.vipsuns.com/payStatus\",\n" +
+                "\"out_trade_no\"\n" +
+                ":\n" +
+                "\"216468798641520\",\n" +
+                "\"spbill_create_ip\"\n" +
+                ":\n" +
+                "\"176.2.1.131\",\n" +
+                "\"totalFee\"\n" +
+                ":\n" +
+                "1,\n" +
+                "\"trade_type\"\n" +
+                ":\n" +
+                "\"JSAPI\"}";
+        String url = "http://172.16.0.173:11080/yaeyy/weixin/pay/unifiedOrderGetRequest";
+        url += "?body="+"儿科门诊2018-07-30张丹医生";
+        url += "&nonce_str="+"ffee8acfb95e40db928d6ca4dd875551";
+        url += "&notify_url="+"https://wechat.vipsuns.com/payStatus";
+        url += "&out_trade_no="+"216468798641520";
+        url += "&spbill_create_ip="+"176.2.1.131";
+        url += "&totalFee="+"1";
+        url += "&trade_type="+"JSAPI";
+//        url += "?"+strJson;
+        String response = HttpUtil.sendGet(url);
+        return response;
     }
 
     /**

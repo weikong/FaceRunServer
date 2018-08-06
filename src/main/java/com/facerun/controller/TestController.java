@@ -58,4 +58,36 @@ public class TestController extends AbsController {
     public String runSnackWel(@RequestParam Map params, Model model) {
         return "snack/welcome";
     }
+
+    /**
+     * 丫圈
+     */
+    @RequestMapping("y_quan")
+    public String runYQuan(@RequestParam Map params, Model model) {
+        return "Y/y_quan";
+    }
+
+    /**
+     * 丫圈
+     */
+    @RequestMapping("frame_a")
+    public String runFrameA(@RequestParam Map params, Model model) {
+        return "Y/frame_a";
+    }
+
+    /**
+     * 丫圈
+     */
+    @RequestMapping("frame_b")
+    public String runFrameB(@RequestParam Map params, Model model) {
+        return "Y/frame_b";
+    }
+
+    /**
+     * 丫圈
+     */
+    @RequestMapping("frame_c")
+    public String runFrameC(@RequestParam Map params, Model model) {
+        return "Y/frame_c";
+    }
 }
