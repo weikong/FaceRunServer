@@ -3,65 +3,330 @@
 <head>
 
     <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+
     <title>Title</title>
 
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        body {
+            display: flex;
+            flex-flow: column;
+            width: 100vw;
+            height: 100vh;
+            overflow-x: hidden;
+            color: #444444;
+        }
+
+        /*设置全局未点击链接的颜色*/
+        a:link {
+            color: #ffffff !important
+        }
+
+        /*设置全局被点击后的链接颜色*/
+        a:visited {
+            color: #000000 !important
+        }
+
+        /*设置全局鼠标悬停在链接上未点击时的颜色*/
+        a:hover {
+            color: #cc0000 !important
+        }
+
+        /*设置全局鼠标在点击链接瞬间发生的动作*/
+        a:active {
+            color: #cc0000 !important
+        }
+
         header {
-            background-color: black;
+            background-color: #cc0000;
             color: white;
             text-align: center;
-            padding: 5px;
+            padding: 10px;
+            width: 100vw;
+            position: fixed;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-flow: row;
+            justify-content: flex-start;
+            align-items: inherit;
+            margin-top: 47px;
+            overflow-x: hidden;
+        }
+
+        /*设置全局鼠标悬停在链接上未点击时的颜色*/
+        .menu_class:hover {
+            color: #cc0000 !important;
+            background-color: white !important;
+        }
+
+        /*设置全局鼠标在点击链接瞬间发生的动作*/
+        .menu_class:active {
+            color: #cc0000 !important;
+            background-color: white !important;
         }
 
         nav {
-            line-height: 50px;
-            background-color: #eeeeee;
-            height: 1280px;
-            width: 180px;
-            float: left;
-            padding: 10px;
+            background-color: gainsboro;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            flex: 1;
+            left: 0;
         }
 
         section {
-            width: 600px;
-            float: left;
-            height: 1280px;
-            padding: 10px;
+            flex: 2.4;
+            margin-left: 2px;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            width: 100vw;
         }
 
         footer {
-            background-color: black;
+            background-color: #cc0000;
             color: white;
             clear: both;
             text-align: center;
-            padding: 25px;
+            position: fixed;
+            bottom: 0;
+            width: 100vw;
+
+            flex: 1;
+            display: flex;
+            flex-flow: row;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        dt {
+            width: 100%;
+            height: auto;
+            margin-bottom: 1px;
+        }
+
+        dt:active {
+            background-color: #eeeeee !important
+        }
+
+        img {
+            background-color: grey;
+            color: bisque;
+            width: 90px;
+            height: auto;
+            float: left;
+            vertical-align: top;
+        }
+
+        /*div {
+            width: 100%;
+            float: left;
+            padding: 1px;
+            overflow-x: hidden;
+        }*/
+
+        .bg_image {
+            background: url(http://pic.melinked.com/me2017/a21/0n3fcdlde7r9.jpg) no-repeat;
+            width: 100px;
+            height: 100px;
+            border: 1px solid #999;
+            align-self: flex-end;
+            background-size: cover;
+        }
+
+        .div_bottom_left {
+            background-color: #444444;
+            align-items: center;
+            text-align: center;
+            float: left;
+            flex: 1.7;
+
+            display: flex;
+            flex-flow: row;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .div_bottom_right {
+            align-self: center;
+            align-items: center;
+            text-align: center;
+            float: left;
+            flex: 1;
+        }
+
+        span {
+            padding: 2px;
+            font-size: 13px;
+            width: 66px;
+        }
+
+        .circle {
+            background-color: red;
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            margin: 6px;
+            background-image: url(http://pic.melinked.com/me2017/a21/0n3fcdlde7r9.jpg);
+            border: 1px solid #999;
+            align-self: flex-end;
+            background-size: cover;
         }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>City Gallery</h1>
+    <h3>丫 圈</h3>
 </header>
 
-<nav>
-    <a href="http://localhost:9090/test/frame_a" target="iframe_a"><span style="font-size: 30px">爆辣</span></a><br>
-    <a href="http://localhost:9090/test/frame_b" target="iframe_a"><span style="font-size: 30px">一点点辣</span></a><br>
-    <a href="http://localhost:9090/test/frame_c" target="iframe_a"><span style="font-size: 30px">点儿都不拉</span></a><br>
-    <a href="http://localhost:9090/test/frame_c" target="iframe_a"><span style="font-size: 30px">素食</span></a><br>
-</nav>
+<div class="content">
+    <nav>
+        <div style="width: 100vw;float: none; padding-top:10px;padding-left:6px;padding-bottom:10px;padding-right:6px;"
+             class="menu_class" id="menu_1"><span
+                style="font-size: 15px">爆辣</span></div>
+        <div style="width: 100vw;float: none; padding-top:10px;padding-left:6px;padding-bottom:10px;padding-right:6px;"
+             class="menu_class" id="menu_2"><span
+                style="font-size: 15px">一点点辣</span></div>
+        <div style="width: 100vw;float: none; padding-top:10px;padding-left:6px;padding-bottom:10px;padding-right:6px;"
+             class="menu_class" id="menu_3"><span
+                style="font-size: 15px">点儿都不辣</span></div>
+        <div style="width: 100vw;float: none; padding-top:10px;padding-left:6px;padding-bottom:10px;padding-right:6px;"
+             class="menu_class" id="menu_4"><span
+                style="font-size: 15px">素食</span></div>
+        <div style="height: 60px">
+        </div>
+    </nav>
 
-<!--<iframe src="http://localhost:9090/test/frame_a" name="iframe_a" width="80%" height="1024"></iframe>-->
+    <section>
+        <!--<iframe src="http://localhost:9090/test/frame_a" name="iframe_a" frameborder="0" scrolling="yes">不支持iframe-->
+        <dl>
+            <dt>
+            <div>
+                <img src="../static/image/yabo3.jpg" />
+                <span>狂暴鸭脖（爆辣）</span><br>
+                <span>月销量1254份</span><br>
+                <span>3.5元/根</span>
+            </div>
+            </dt>
+            <dt>
+            <div>
+                <img src="../static/image/yatou.jpg"/>
+                <span>狂暴鸭头 5元/头</span><br>
+                <span>月销量1254份</span><br>
+                <span>5元/头</span>
+            </div>
+            </dt>
+            <dt>
+            <div>
+                <img src="../static/image/yachi.jpg"/>
+                <span>狂暴鸭翅 15元/小份</span><br>
+                <span>月销量1254份</span><br>
+                <span>15元/小份</span>
+            </div>
+            </dt>
+            <dt>
+            <div>
+                <img src="../static/image/jichi.jpg"/>
+                <span>狂暴鸡尖 13元/小份</span><br>
+                <span>月销量1254份</span><br>
+                <span>13元/小份</span>
+            </div>
+            </dt>
+            <dt>
+            <div>
+                <img src="../static/image/yabo3.jpg"/>
+                <span>狂暴鸭脖（爆辣）</span><br>
+                <span>月销量1254份</span><br>
+                <span>3.5元/根</span>
+            </div>
+            </dt>
+            <dt>
+            <div>
+                <img src="../static/image/yatou.jpg"/>
+                <span>狂暴鸭头 5元/头</span><br>
+                <span>月销量1254份</span><br>
+                <span>5元/头</span>
+            </div>
+            </dt>
+            <dt>
+            <div>
+                <img src="../static/image/yachi.jpg"/>
+                <span>狂暴鸭翅 15元/小份</span><br>
+                <span>月销量1254份</span><br>
+                <span>15元/小份</span>
+            </div>
+            </dt>
+            <dt>
+            <div>
+                <img src="../static/image/jichi.jpg"/>
+                <span>狂暴鸡尖 13元/小份</span><br>
+                <span>月销量1254份</span><br>
+                <span>13元/小份</span>
+            </div>
+            </dt>
+            <dt>
+            <dt>
+            <div>
+                <img src="../static/image/yabo3.jpg"/>
+                <span>狂暴鸭脖（爆辣）</span><br>
+                <span>月销量1254份</span><br>
+                <span>3.5元/根</span>
+            </div>
+            </dt>
+            <dt>
+            <div>
+                <img src="../static/image/yatou.jpg"/>
+                <span>狂暴鸭头 5元/头</span><br>
+                <span>月销量1254份</span><br>
+                <span>5元/头</span>
+            </div>
+            </dt>
+            <dt>
+            <div>
+                <img src="../static/image/yachi.jpg"/>
+                <span>狂暴鸭翅 15元/小份</span><br>
+                <span>月销量1254份</span><br>
+                <span>15元/小份</span>
+            </div>
+            </dt>
+            <dt>
+            <div>
+                <img src="../static/image/jichi.jpg"/>
+                <span>狂暴鸡尖 13元/小份</span><br>
+                <span>月销量1254份</span><br>
+                <span>13元/小份</span>
+            </div>
+            </dt>
+            <dt>
+            <div style="height: 60px">
+            </div>
+            </dt>
+        </dl>
+        </iframe>
+    </section>
+</div>
 
-<section>
-    <iframe src="http://localhost:9090/test/frame_a" name="iframe_a" frameborder="0" scrolling="no"
-            height="1280px" width="600px">不支持iframe
-    </iframe>
-</section>
 
 <footer>
-    Copyright W3Schools.com
+    <!--Copyright Ya-Quan.com-->
+    <div class="div_bottom_left">
+        <div class="circle"></div>
+        未选购商品
+    </div>
+    <div class="div_bottom_right">￥30起送</div>
 </footer>
 
 </body>
 </html>
+<script type="text/javascript">
+</script>

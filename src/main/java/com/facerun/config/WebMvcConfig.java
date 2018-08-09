@@ -1,11 +1,13 @@
 package com.facerun.config;
 
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
  * Created by xinzhendi-031 on 2018/6/5.
  */
+@Configuration
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
     @Override
