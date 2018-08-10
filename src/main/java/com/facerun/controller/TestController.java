@@ -42,6 +42,14 @@ public class TestController extends AbsController {
     }
 
     /**
+     * 用户数据
+     */
+    @GetMapping("food_main")
+    public String foodMain(@RequestParam Map params, Model model) {
+        return "Y/food_main";
+    }
+
+    /**
      * 宠物约会
      */
     @GetMapping("pet_dating")
