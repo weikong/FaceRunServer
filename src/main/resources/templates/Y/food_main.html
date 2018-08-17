@@ -192,16 +192,20 @@
 
 <div class="content">
     <nav>
-        <div style="width: 100vw;float: none; padding-top:10px;padding-left:6px;padding-bottom:10px;padding-right:6px;"
+        <div onclick="loadFood('爆辣')"
+             style="width: 100vw;float: none; padding-top:10px;padding-left:6px;padding-bottom:10px;padding-right:6px;"
              class="menu_class" id="menu_1"><span
                 style="font-size: 15px">爆辣</span></div>
-        <div style="width: 100vw;float: none; padding-top:10px;padding-left:6px;padding-bottom:10px;padding-right:6px;"
+        <div onclick="loadFood('微辣')"
+             style="width: 100vw;float: none; padding-top:10px;padding-left:6px;padding-bottom:10px;padding-right:6px;"
              class="menu_class" id="menu_2"><span
                 style="font-size: 15px">一点点辣</span></div>
-        <div style="width: 100vw;float: none; padding-top:10px;padding-left:6px;padding-bottom:10px;padding-right:6px;"
+        <div onclick="loadFood('五香')"
+             style="width: 100vw;float: none; padding-top:10px;padding-left:6px;padding-bottom:10px;padding-right:6px;"
              class="menu_class" id="menu_3"><span
                 style="font-size: 15px">点儿都不辣</span></div>
-        <div style="width: 100vw;float: none; padding-top:10px;padding-left:6px;padding-bottom:10px;padding-right:6px;"
+        <div onclick="loadFood('')"
+             style="width: 100vw;float: none; padding-top:10px;padding-left:6px;padding-bottom:10px;padding-right:6px;"
              class="menu_class" id="menu_4"><span
                 style="font-size: 15px">素食</span></div>
         <div style="height: 60px">
@@ -209,46 +213,8 @@
     </nav>
 
     <section>
-        <!--<iframe src="http://localhost:9090/test/frame_a" name="iframe_a" frameborder="0" scrolling="yes">不支持iframe-->
         <dl id="food_list">
-            <dt>
-            <div>
-                <img src="../static/image/yabo3.jpg"/>
-                <span>狂暴鸭脖（爆辣）</span><br>
-                <span>月销量1254份</span><br>
-                <span>3.5元/根</span>
-            </div>
-            </dt>
-            <dt>
-            <div>
-                <img src="../static/image/yatou.jpg"/>
-                <span>狂暴鸭头 5元/头</span><br>
-                <span>月销量1254份</span><br>
-                <span>5元/头</span>
-            </div>
-            </dt>
-            <dt>
-            <div>
-                <img src="../static/image/yachi.jpg"/>
-                <span>狂暴鸭翅 15元/小份</span><br>
-                <span>月销量1254份</span><br>
-                <span>15元/小份</span>
-            </div>
-            </dt>
-            <dt>
-            <div>
-                <img src="../static/image/jichi.jpg"/>
-                <span>狂暴鸡尖 13元/小份</span><br>
-                <span>月销量1254份</span><br>
-                <span>13元/小份</span>
-            </div>
-            </dt>
-            <dt>
-            <div style="height: 60px">
-            </div>
-            </dt>
         </dl>
-        </iframe>
     </section>
 </div>
 
@@ -264,8 +230,23 @@
 
 </body>
 <script type="text/javascript" th:inline="javascript">
+    //    function loadFood(kind){
+    //        var kingFood1=document.getElementById("div1");
+    //        kingFood1.onclick = function() {
+    //            alert(kind);
+    //        }
+    //    }
     window.onload = function () {
+        loadFood('');
+    }
+
+    function loadFood(kind) {
         var url = "/food/list";
+        if (kind == null || kind == '') {
+            url = url;
+        } else {
+            url += '?kind=' + kind;
+        }
         var request = new XMLHttpRequest();
         request.onload = function () {
             if (request.status == 200) {
@@ -275,51 +256,51 @@
         request.open("GET", url);
         request.send(null);
     }
+
     function displayCircleContent(content) {
         var p = document.getElementById("food_list");
+        while (p.hasChildNodes()) //当elem下还存在子节点时 循环继续
+        {
+            p.removeChild(p.firstChild);
+        }
         var dataJson = JSON.parse(content);
         var datas = dataJson.data;
         for (var i = 0; i < datas.length; i++) {
             var item = datas[i];
             var dt = document.createElement("dt");
+            dt.style.padding = '1px';
             var itemDiv = document.createElement("div");     //创建一个div元素
+            itemDiv.setAttribute("id", "item " + i);
+            itemDiv.setAttribute('name', item.name);
             var itemImg = document.createElement("img");     //创建一个img元素
             var itemSpanName = document.createElement("span");     //创建一个span元素
             var itemBr1 = document.createElement("br");     //创建一个br元素
             var itemSpanDesc = document.createElement("span");     //创建一个span元素
             var itemBr2 = document.createElement("br");     //创建一个br元素
             var itemSpanPrice = document.createElement("span");     //创建一个span元素
-            itemImg.src = "../static/image/yatou.jpg";
-            itemSpanName.textContent = item.name;
-            itemSpanDesc.textContent = item.desc;
-            itemSpanPrice.textContent = item.price;
+//            itemImg.src = "../static/image/yatou.jpg";
+            itemImg.src = item.image;
+            itemSpanName.textContent = item.name + '(' + item.kind + ')';
+            itemSpanDesc.textContent = item.sales;
+            itemSpanPrice.textContent = item.price + item.unit;
             itemDiv.appendChild(itemImg);      //为dom添加子元素img
             itemDiv.appendChild(itemSpanName);      //为dom添加子元素
             itemDiv.appendChild(itemBr1);      //为dom添加子元素
             itemDiv.appendChild(itemSpanDesc);      //为dom添加子元素
             itemDiv.appendChild(itemBr2);      //为dom添加子元素
             itemDiv.appendChild(itemSpanPrice);      //为dom添加子元素
-            p.appendChild(itemDiv);      //为dom添加子元素h3
-
-//            var div2 = document.createElement("div");     //创建一个div元素
-//            var h2 = document.createElement("h4");     //创建一个h3元素
-//            h2.textContent = datas[i].description;
-//            var bigImg = document.createElement("img");     //创建一个img元素
-//            var photos = datas[i].photos;
-//            if (photos != null && photos.trim() != '') {
-//                var photoArray = photos.split(",");
-//                if (photoArray != null && photoArray.length > 0) {
-//                    var item = photoArray[0];
-//                    if (item != null && (item.startsWith("http://") || item.startsWith("https://"))) {
-//                        bigImg.src = item;   //给img元素的src属性赋值
-//                    } else {
-//                        bigImg.src = "http://172.16.0.138:9090/download_file?filename=" + photoArray[0];   //给img元素的src属性赋值
-//                    }
-//                }
-//            }
-//            div2.appendChild(bigImg);      //为dom添加子元素img
-//            div2.appendChild(h2);      //为dom添加子元素h3
-//            p.appendChild(div2);      //为dom添加子元素h3
+            dt.appendChild(itemDiv);
+            p.appendChild(dt);      //为dom添加子元素
+            itemDiv.onclick = function () {
+                alert("" + this.id + "        " + this.getAttribute('name'));
+            }
+            if (i == datas.length - 1) {
+                var dt = document.createElement("dt");
+                var itemDiv = document.createElement("div");     //创建一个div元素
+                itemDiv.style.height = '60px';
+                dt.appendChild(itemDiv);
+                p.appendChild(dt);      //为dom添加子元素
+            }
         }
     }
 </script>
