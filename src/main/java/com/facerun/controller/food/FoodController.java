@@ -36,16 +36,30 @@ public class FoodController extends AbsController {
     private FoodMapper foodMapper;
 
     /**
-     * 显示用户列表
+     * 查询丫圈列表数据
      */
     @GetMapping("/list")
     @ResponseBody
     public Object foodList(@RequestParam Map params, Model model) {
-        String kind = MapUtils.getString(params,"kind","");
+        String kind = MapUtils.getString(params, "kind", "");
         FoodExample example = new FoodExample();
         if (StringUtils.isNotEmpty(kind))
             example.createCriteria().andKindEqualTo(kind);
         List<Food> list = foodMapper.selectByExample(example);
         return ajax(list);
+    }
+
+    /**
+     * 查询丫圈卤菜详情
+     */
+    @GetMapping("/detail")
+    @ResponseBody
+    public Object foodDetail(@RequestParam Map params, Model model) {
+        int id = MapUtils.getInteger(params, "id");
+        FoodExample example = new FoodExample();
+        if (id > 0)
+            example.createCriteria().andIdEqualTo(id);
+        Food food = foodMapper.selectByPrimaryKey(id);
+        return ajax(food);
     }
 }

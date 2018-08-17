@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <title>Title</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        body {
+            display: flex;
+            flex-flow: column;
+            width: 100vw;
+            height: 100vh;
+            overflow-x: hidden;
+            color: #444444;
+        }
+
+        header {
+            background-color: #cc0000;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            width: 100vw;
+            position: fixed;
+        }
+
+        footer {
+            background-color: #cc0000;
+            color: white;
+            clear: both;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100vw;
+
+            flex: 1;
+            display: flex;
+            flex-flow: row;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        img {
+            height: auto;
+            width: auto \9;
+            width: 100%;
+        }
+
+        span {
+            padding: 12px;
+            font-size: 14px;
+            width: 100vw;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h3>丫 圈</h3>
+</header>
+
+<div class="content" id="food_content">
+    <!--<img src="../../static/image/yabo3.jpg" style="width: 100vw;height: auto">-->
+</div>
+
+</body>
+<script type="text/javascript" th:inline="javascript">
+    window.onload = function () {
+        loadFoodDetail(getQueryString('id'));
+    }
+
+    function loadFoodDetail(id) {
+        var url = "/food/detail";
+        url += '?id=' + id;
+        var request = new XMLHttpRequest();
+        request.onload = function () {
+            if (request.status == 200) {
+                displayContent(request.responseText)
+            }
+        };
+        request.open("GET", url);
+        request.send(null);
+    }
+
+    //获取url上的参数
+    function getQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]);
+        return null;
+    }
+
+    function displayContent(content) {
+        var p = document.getElementById("food_content");
+        while (p.hasChildNodes()) //当elem下还存在子节点时 循环继续
+        {
+            p.removeChild(p.firstChild);
+        }
+        var dataJson = JSON.parse(content);
+        var item = dataJson.data;
+        var itemDiv = document.createElement("div");     //创建一个div元素
+        var itemImg = document.createElement("img");     //创建一个img元素
+        var itemSpanName = document.createElement("span");     //创建一个span元素
+        var itemBr1 = document.createElement("br");     //创建一个br元素
+        var itemSpanDesc = document.createElement("span");     //创建一个span元素
+        var itemBr2 = document.createElement("br");     //创建一个br元素
+        var itemSpanPrice = document.createElement("span");     //创建一个span元素
+//            itemImg.src = "../static/image/yatou.jpg";
+        itemImg.src = item.image;
+        itemSpanName.textContent = item.name + '(' + item.kind + ')';
+        itemSpanDesc.textContent = item.sales;
+        itemSpanPrice.textContent = item.price + item.unit;
+        itemDiv.appendChild(itemImg);      //为dom添加子元素img
+        itemDiv.appendChild(itemSpanName);      //为dom添加子元素
+        itemDiv.appendChild(itemBr1);      //为dom添加子元素
+        itemDiv.appendChild(itemSpanDesc);      //为dom添加子元素
+        itemDiv.appendChild(itemBr2);      //为dom添加子元素
+        itemDiv.appendChild(itemSpanPrice);      //为dom添加子元素
+        p.appendChild(itemDiv);      //为dom添加子元素
+    }
+</script>
+</html>

@@ -193,7 +193,7 @@
 <div class="content">
     <nav>
         <div onclick="loadFood('')"
-             style="width: 100vw;float: none; padding-top:10px;padding-left:6px;padding-bottom:10px;padding-right:6px;"
+             style="width: 100vw;float: none; padding-top:10px;padding-left:6px;padding-bottom:10px;padding-right:6px; color: #cc0000;background-color: white;"
              class="menu_class" id="menu_0"><span
                 style="font-size: 15px">全部</span></div>
         <div onclick="loadFood('爆辣')"
@@ -208,7 +208,7 @@
              style="width: 100vw;float: none; padding-top:10px;padding-left:6px;padding-bottom:10px;padding-right:6px;"
              class="menu_class" id="menu_3"><span
                 style="font-size: 15px">点儿都不辣</span></div>
-        <div onclick="loadFood('')"
+        <div onclick="loadFood('素食')"
              style="width: 100vw;float: none; padding-top:10px;padding-left:6px;padding-bottom:10px;padding-right:6px;"
              class="menu_class" id="menu_4"><span
                 style="font-size: 15px">素食</span></div>
@@ -244,6 +244,7 @@
             url = url;
         } else {
             url += '?kind=' + kind;
+            defDisplay();
         }
         var request = new XMLHttpRequest();
         request.onload = function () {
@@ -253,6 +254,12 @@
         };
         request.open("GET", url);
         request.send(null);
+    }
+
+    function defDisplay() {
+        var menu_0 = document.getElementById("menu_0");
+        menu_0.style.color = 'black';
+        menu_0.style.backgroundColor = 'gainsboro';
     }
 
     function displayCircleContent(content) {
@@ -266,9 +273,9 @@
         for (var i = 0; i < datas.length; i++) {
             var item = datas[i];
             var dt = document.createElement("dt");
-            dt.style.padding = '1px';
+            dt.style.paddingBottom = '1px';
             var itemDiv = document.createElement("div");     //创建一个div元素
-            itemDiv.setAttribute("id", "item " + i);
+            itemDiv.setAttribute("id", item.id);
             itemDiv.setAttribute('name', item.name);
             var itemImg = document.createElement("img");     //创建一个img元素
             var itemSpanName = document.createElement("span");     //创建一个span元素
@@ -290,7 +297,9 @@
             dt.appendChild(itemDiv);
             p.appendChild(dt);      //为dom添加子元素
             itemDiv.onclick = function () {
-                alert("" + this.id + "        " + this.getAttribute('name'));
+//                alert("" + this.id);
+                // 以下方式直接跳转
+                window.location.href = 'food_detail.html?id=' + this.id;
             }
             if (i == datas.length - 1) {
                 var dt = document.createElement("dt");

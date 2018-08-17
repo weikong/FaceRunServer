@@ -5,6 +5,7 @@ import com.facerun.bean.PetDating;
 import com.facerun.bean.Run;
 import com.facerun.dao.PetDatingMapper;
 import com.facerun.dao.RunMapper;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,11 +43,20 @@ public class TestController extends AbsController {
     }
 
     /**
-     * 用户数据
+     * 丫圈首页
      */
     @GetMapping("food_main")
     public String foodMain(@RequestParam Map params, Model model) {
         return "Y/food_main";
+    }
+
+    /**
+     * 丫圈菜品详情页
+     */
+    @GetMapping("food_detail")
+    public String foodetail(@RequestParam Map params, Model model) {
+        String id = MapUtils.getString(params,"id","");
+        return "Y/food_detail";
     }
 
     /**
