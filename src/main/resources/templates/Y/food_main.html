@@ -192,6 +192,10 @@
 
 <div class="content">
     <nav>
+        <div onclick="loadFood('')"
+             style="width: 100vw;float: none; padding-top:10px;padding-left:6px;padding-bottom:10px;padding-right:6px;"
+             class="menu_class" id="menu_0"><span
+                style="font-size: 15px">全部</span></div>
         <div onclick="loadFood('爆辣')"
              style="width: 100vw;float: none; padding-top:10px;padding-left:6px;padding-bottom:10px;padding-right:6px;"
              class="menu_class" id="menu_1"><span
@@ -230,12 +234,6 @@
 
 </body>
 <script type="text/javascript" th:inline="javascript">
-    //    function loadFood(kind){
-    //        var kingFood1=document.getElementById("div1");
-    //        kingFood1.onclick = function() {
-    //            alert(kind);
-    //        }
-    //    }
     window.onload = function () {
         loadFood('');
     }
