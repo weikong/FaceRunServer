@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.facerun.dao.CustCircleLikeMapper">
+
+    <resultMap id="BaseResultMap" type="com.facerun.bean.CircleLike">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="like_circle_id" jdbcType="BIGINT" property="likeCircleId"/>
+        <result column="like_user_id" jdbcType="BIGINT" property="likeUserId"/>
+        <result column="like_user_name" jdbcType="VARCHAR" property="likeUserName"/>
+        <result column="like_time" jdbcType="BIGINT" property="likeTime"/>
+    </resultMap>
+
+    <select id="getCircleLikeCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT
+        COUNT(0)
+        FROM circlelike
+        <where>
+            <if test="like_circle_id != null">
+                like_circle_id = #{like_circle_id}
+            </if>
+        </where>
+    </select>
+</mapper>

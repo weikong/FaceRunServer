@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.facerun.dao.CustCircleShareMapper">
+
+    <resultMap id="BaseResultMap" type="com.facerun.bean.CircleShare">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="share_circle_id" jdbcType="BIGINT" property="shareCircleId"/>
+        <result column="share_user_id" jdbcType="BIGINT" property="shareUserId"/>
+        <result column="share_user_name" jdbcType="VARCHAR" property="shareUserName"/>
+        <result column="share_time" jdbcType="BIGINT" property="shareTime"/>
+    </resultMap>
+
+    <select id="getCircleShareCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT
+        COUNT(0)
+        FROM circleshare
+        <where>
+            <if test="share_circle_id != null">
+                share_circle_id = #{share_circle_id}
+            </if>
+        </where>
+    </select>
+</mapper>

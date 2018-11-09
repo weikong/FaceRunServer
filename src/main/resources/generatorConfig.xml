@@ -109,8 +109,16 @@
         <table tableName="food" domainObjectName="Food">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
-        <!--food 食物数据表-->
+        <!--circlereply 评论表-->
         <table tableName="circlereply" domainObjectName="CircleReply">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <!--circlelike 点赞表-->
+        <table tableName="circlelike" domainObjectName="CircleLike">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <!--circleshare 分享表-->
+        <table tableName="circleshare" domainObjectName="CircleShare">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
     </context>

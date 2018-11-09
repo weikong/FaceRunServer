@@ -10,6 +10,7 @@
         <result column="reply_content" jdbcType="VARCHAR" property="replyContent"/>
         <result column="reply_time" jdbcType="BIGINT" property="replyTime"/>
         <result column="reply_id" jdbcType="BIGINT" property="replyId"/>
+        <result column="reply_root_id" jdbcType="BIGINT" property="replyRootId"/>
     </resultMap>
 
     <select id="getCircleReplyList" parameterType="java.util.Map" resultMap="BaseResultMap">
@@ -20,7 +21,13 @@
             <if test="reply_circle_id != null">
                 cr.reply_circle_id = #{reply_circle_id}
             </if>
+            <if test="reply_root_id != null">
+                AND cr.reply_root_id = #{reply_root_id}
+            </if>
         </where>
-        ORDER BY cr.reply_time DESC
+        ORDER BY cr.reply_time ASC
+        <if test="beginNum !=null">
+            limit #{beginNum},#{limitSize}
+        </if>
     </select>
 </mapper>

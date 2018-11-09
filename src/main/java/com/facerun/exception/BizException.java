@@ -21,7 +21,7 @@ public class BizException extends RuntimeException {
     }
 
     public BizException(Code code) {
-        this(code, null);
+        this(code, false);
     }
 
     public BizException(Code code, Object[] objects) {

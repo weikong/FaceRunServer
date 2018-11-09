@@ -38,10 +38,8 @@ public class CircleController extends AbsController {
             circleService.circleReplyInsert(params);
             return ajax();
         } catch (BizException e) {
-            log.error(e.getMessage());
             return ajax(e);
         } catch (Exception e) {
-            log.error(e.getMessage());
             return ajax(Code.FAIL);
         }
     }

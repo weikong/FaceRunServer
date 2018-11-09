@@ -13,10 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by xinzhendi-031 on 2017/12/1.
@@ -36,6 +33,10 @@ public class CircleService {
     private CircleReplyMapper circleReplyMapper;
     @Autowired
     private CustCircleReplyMapper custCircleReplyMapper;
+    @Autowired
+    private CircleLikeService circleLikeService;
+    @Autowired
+    private CircleShareService circleShareService;
 
     public void circleReplyInsert(Map params) {
         if (params == null){
@@ -52,16 +53,48 @@ public class CircleService {
         String replyUserName = account.getName();
         String replyContent = MapUtils.getString(params,"replyContent");
         int replyId = MapUtils.getInteger(params,"replyId",0);
+        int replyRootId = MapUtils.getInteger(params,"replyRootId",0);
         CircleReply circleReply = new CircleReply();
         circleReply.setReplyCircleId(replyCircleId);
         circleReply.setReplyUserId(replyUserId);
         circleReply.setReplyUserName(replyUserName);
         circleReply.setReplyContent(replyContent);
         circleReply.setReplyId(replyId);
+        circleReply.setReplyRootId(replyRootId);
         int insert = circleReplyMapper.insertSelective(circleReply);
+        if (insert <= 0)
+            throw new BizException(Code.FAIL_DATABASE_INSERT);
     }
 
     public List<CircleReply> circleReplyQuery(Map params) {
+        Map paramsWrapper = new HashMap();
+        int pageSize = Integer.valueOf(params.get("pageSize") == null ? "20" : params.get("pageSize").toString());
+        int pageNum = Integer.valueOf(params.get("pageNum") == null ? "1" : params.get("pageNum").toString());
+        int reply_circle_id = MapUtils.getInteger(params,"reply_circle_id");
+        int reply_root_id = MapUtils.getInteger(params,"reply_root_id",0);
+        int beginNum = pageSize * (pageNum - 1);
+        paramsWrapper.put("beginNum", beginNum);
+        paramsWrapper.put("limitSize", pageSize);
+        paramsWrapper.put("reply_circle_id", reply_circle_id);
+        paramsWrapper.put("reply_root_id", reply_root_id);
+        List<CircleReply> list = custCircleReplyMapper.getCircleReplyList(paramsWrapper);
+        List<CircleReply> responseList = new ArrayList<>();
+        for (int i=0;i<list.size();i++){
+            CircleReply circleReply = list.get(i);
+            responseList.add(circleReply);
+            paramsWrapper.put("reply_root_id", circleReply.getId());
+            List<CircleReply> items = circleReplyItemsQuery(paramsWrapper);
+            if (items != null && items.size() > 0)
+                responseList.addAll(items);
+        }
+        return responseList;
+    }
+
+    public List<CircleReply> circleReplyItemsQuery(Map params) {
+        List<CircleReply> responseList = new ArrayList<>();
+        int reply_root_id = MapUtils.getInteger(params,"reply_root_id",0);
+        if (reply_root_id <= 0)
+            return responseList;
         Map paramsWrapper = new HashMap();
         int pageSize = Integer.valueOf(params.get("pageSize") == null ? "20" : params.get("pageSize").toString());
         int pageNum = Integer.valueOf(params.get("pageNum") == null ? "1" : params.get("pageNum").toString());
@@ -70,6 +103,7 @@ public class CircleService {
         paramsWrapper.put("beginNum", beginNum);
         paramsWrapper.put("limitSize", pageSize);
         paramsWrapper.put("reply_circle_id", reply_circle_id);
+        paramsWrapper.put("reply_root_id", reply_root_id);
         List<CircleReply> list = custCircleReplyMapper.getCircleReplyList(paramsWrapper);
         return list;
     }
@@ -84,10 +118,26 @@ public class CircleService {
         List<Map> list = custCircleMapper.getCircleList(paramsWrapper);
         for (Map map : list){
             int circle_id = (int) map.get("id");
-            CircleReplyExample example = new CircleReplyExample();
-            example.createCriteria().andReplyCircleIdEqualTo(circle_id);
-            List<CircleReply> circleReplies = circleReplyMapper.selectByExample(example);
+            Map paramReply = new HashMap();
+            paramReply.put("beginNum", beginNum);
+            paramReply.put("limitSize", pageSize);
+            paramReply.put("reply_circle_id", circle_id);
+            paramReply.put("reply_root_id", 0);
+            List<CircleReply> circleReplies = circleReplyQuery(paramReply);
             map.put("reply",circleReplies);
+            map.put("replyCount",circleReplies == null ? 0 : circleReplies.size());
+            paramReply.put("like_circle_id", circle_id);
+            int likeCount = circleLikeService.circleLikeQuery(paramReply);
+            int userId = MapUtils.getInteger(params,"userId",0);
+            boolean hasThisUser = false;
+            if (userId>0){
+                hasThisUser = circleLikeService.hasCircleLike(userId,circle_id);
+            }
+            map.put("hasThisUser",hasThisUser);
+            paramReply.put("share_circle_id", circle_id);
+            int shareCount = circleShareService.circleShareQuery(paramReply);
+            map.put("likeCount",likeCount);
+            map.put("shareCount",shareCount);
         }
         return list;
     }
