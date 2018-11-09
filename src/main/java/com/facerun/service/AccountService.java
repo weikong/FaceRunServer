@@ -145,7 +145,7 @@ public class AccountService {
         String desc = MapUtils.getString(params, "desc", "");
         Account account = accountSelect(strAccount);
         if (account == null || account.getId() <= 0)
-            throw new BizException(Code.USER_EXIST);
+            throw new BizException(Code.USER_NOT_EXIST);
         if (StringUtils.isNotEmpty(name)){
             account.setName(name);
         }

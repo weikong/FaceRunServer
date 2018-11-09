@@ -5,6 +5,7 @@ import com.facerun.bean.Run;
 import com.facerun.dao.AccountMapper;
 import com.facerun.dao.RunMapper;
 import com.facerun.exception.BizException;
+import com.facerun.service.AccountService;
 import com.facerun.service.CircleService;
 import com.facerun.service.RunService;
 import com.facerun.util.Code;
@@ -29,6 +30,35 @@ public class CircleController extends AbsController {
 
     @Autowired
     private CircleService circleService;
+
+    @PostMapping("/insert_reply")
+    @ResponseBody
+    public Object insertReply(@RequestParam Map params, Model model) {
+        try {
+            circleService.circleReplyInsert(params);
+            return ajax();
+        } catch (BizException e) {
+            log.error(e.getMessage());
+            return ajax(e);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ajax(Code.FAIL);
+        }
+    }
+
+    @PostMapping("/query_reply")
+    @ResponseBody
+    public Object queryReply(@RequestParam Map params, Model model) {
+        try {
+            return ajax(circleService.circleReplyQuery(params));
+        } catch (BizException e) {
+            log.error(e.getMessage());
+            return ajax(e);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ajax(Code.FAIL);
+        }
+    }
 
     @PostMapping("/query")
     @ResponseBody

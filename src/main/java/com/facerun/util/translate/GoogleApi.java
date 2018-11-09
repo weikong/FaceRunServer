@@ -9,6 +9,7 @@ import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
+import com.facerun.config.Constant;
 import org.apache.commons.lang3.StringUtils;
 
 import com.alibaba.fastjson.JSONArray;
@@ -17,8 +18,6 @@ import com.alibaba.fastjson.JSONArray;
  * Created by maesinfo on 2018/9/5.
  */
 public class GoogleApi {
-    private static final String PATH = "E:\\workspace_server\\keep\\FaceRunServer\\src\\main\\java\\com\\facerun\\util\\translate" + File.separator + "gettk.js";
-
     static ScriptEngine engine = null;
 
 //    private Browser browser = null;
@@ -29,7 +28,7 @@ public class GoogleApi {
         FileInputStream fileInputStream = null;
         Reader scriptReader = null;
         try {
-            InputStream is = new BufferedInputStream(new FileInputStream(PATH));
+            InputStream is = new BufferedInputStream(new FileInputStream(Constant.PATH));
             scriptReader = new InputStreamReader(is, "utf-8");
 //            scriptReader = new InputStreamReader(GoogleApi.class.getResourceAsStream(PATH), "utf-8");
             engine.eval(scriptReader);

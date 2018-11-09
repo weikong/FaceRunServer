@@ -102,4 +102,13 @@ public class TestRestController extends AbsController {
         data.put("food", food);
         return new ModelAndView("food_detail", data);
     }
+
+    /**
+     * 用户数据
+     */
+    @PostMapping("run_datas3")
+    @ResponseBody
+    public String runDatas3(@RequestBody String params, Model model) {
+        return "Hello world!Mr kong 3 = "+params;
+    }
 }

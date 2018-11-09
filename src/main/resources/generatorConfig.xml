@@ -109,6 +109,10 @@
         <table tableName="food" domainObjectName="Food">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
+        <!--food 食物数据表-->
+        <table tableName="circlereply" domainObjectName="CircleReply">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
     </context>
 
 </generatorConfiguration>
