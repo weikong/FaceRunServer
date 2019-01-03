@@ -39,6 +39,24 @@ public class TestRestController extends AbsController {
     private FoodMapper foodMapper;
 
     /**
+     */
+    @GetMapping("test1")
+    @ResponseBody
+    public String test1(@RequestParam Map params, Model model) {
+        String param = MapUtils.getString(params,"param","");
+        return "test1 param = "+param;
+    }
+
+    /**
+     */
+    @PostMapping("test2")
+    @ResponseBody
+    public String test2(@RequestParam Map params, Model model) {
+        String param = MapUtils.getString(params,"param","");
+        return "test2 param = "+param;
+    }
+
+    /**
      * 用户数据
      */
     @GetMapping("run_datas1")
@@ -87,7 +105,7 @@ public class TestRestController extends AbsController {
     public String runDatas2(@RequestParam Map params, Model model) {
 //        List<Run> list = runMapper.selectByExample(null);
 //        return list.toString();
-        return "Hello world!Mr kong 2";
+        return "Hello world!Mr kong 3";
     }
 
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "/food_detail")

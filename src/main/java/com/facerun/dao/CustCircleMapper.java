@@ -14,7 +14,7 @@ public interface CustCircleMapper {
     /**
      * @return 我的好友
      */
-    List<Map> getCircleList(Map params);
+    List<Circle> getCircleList(Map params);
 
     /**
      * @return 查询跑友圈
@@ -24,6 +24,6 @@ public interface CustCircleMapper {
     /**
      * @return
      */
-    List<Map> getCircleByIdList(Map params);
+    List<Circle> getCircleByIdList(Map params);
 
 }

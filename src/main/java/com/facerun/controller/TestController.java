@@ -36,6 +36,14 @@ public class TestController extends AbsController {
     /**
      * 用户数据
      */
+    @GetMapping("welcome")
+    public String welcome(@RequestParam Map params, Model model) {
+        return "snack/welcome";
+    }
+
+    /**
+     * 用户数据
+     */
     @GetMapping("run_datas2")
     public String runDatas(@RequestParam Map params, Model model) {
         List<Run> list = runMapper.selectByExample(null);

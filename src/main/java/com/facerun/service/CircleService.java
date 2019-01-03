@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.facerun.bean.*;
 import com.facerun.dao.*;
 import com.facerun.exception.BizException;
+import com.facerun.util.BeanMapUtil;
 import com.facerun.util.Code;
 import com.facerun.util.Config;
 import org.apache.commons.collections4.MapUtils;
@@ -108,19 +109,20 @@ public class CircleService {
         return list;
     }
 
-    public List<Map> circleQuery(Map params) {
+    public List<Circle> circleQuery(Map params) {
         Map paramsWrapper = new HashMap();
         int pageSize = Integer.valueOf(params.get("pageSize") == null ? "20" : params.get("pageSize").toString());
         int pageNum = Integer.valueOf(params.get("pageNum") == null ? "1" : params.get("pageNum").toString());
         int beginNum = pageSize * (pageNum - 1);
         paramsWrapper.put("beginNum", beginNum);
         paramsWrapper.put("limitSize", pageSize);
-        List<Map> list = custCircleMapper.getCircleList(paramsWrapper);
-        for (Map map : list){
+        List<Circle> list = custCircleMapper.getCircleList(paramsWrapper);
+        for (Circle circle : list){
+            Map map = BeanMapUtil.beanToMap(circle);
             int circle_id = (int) map.get("id");
             Map paramReply = new HashMap();
-            paramReply.put("beginNum", beginNum);
-            paramReply.put("limitSize", pageSize);
+            paramReply.put("pageNum", 1);
+            paramReply.put("pageSize", 4);
             paramReply.put("reply_circle_id", circle_id);
             paramReply.put("reply_root_id", 0);
             List<CircleReply> circleReplies = circleReplyQuery(paramReply);
@@ -153,7 +155,7 @@ public class CircleService {
         return list;
     }
 
-    public List<Map> circleQueryById(Map params) {
+    public List<Circle> circleQueryById(Map params) {
         int account_id = MapUtils.getInteger(params, "account_id", -999);
         Account account = accountService.accountSelect(account_id);
         if (account == null)
@@ -165,7 +167,7 @@ public class CircleService {
         paramsWrapper.put("beginNum", beginNum);
         paramsWrapper.put("limitSize", pageSize);
         paramsWrapper.put("account_id", account_id);
-        List<Map> list = custCircleMapper.getCircleByIdList(paramsWrapper);
+        List<Circle> list = custCircleMapper.getCircleByIdList(paramsWrapper);
         return list;
     }
 

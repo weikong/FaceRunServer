@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,7 @@ public class RunController extends AbsController {
     public Object runList(@RequestParam Map params, Model model) {
         try {
             String strAccount = MapUtils.getString(params,"Account","");
-            List<Run> list = runService.runList(strAccount);
+            List<Run> list = runService.runList(params);
             return ajax(list);
         } catch (BizException e) {
             log.error(e.getMessage());
@@ -61,10 +62,10 @@ public class RunController extends AbsController {
 
     @PostMapping("/insert")
     @ResponseBody
-    public Object insert(@RequestParam Map params, Model model) {
+    public Object insert(HttpServletRequest request, @RequestParam Map params, Model model) {
         try {
-            runService.runInsert(params);
-            return ajax();
+            Run run = runService.runInsert(request,params);
+            return ajax(run.getId());
         } catch (BizException e) {
             log.error(e.getMessage());
             return ajax(e);

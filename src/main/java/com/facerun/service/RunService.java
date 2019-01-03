@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,9 @@ public class RunService {
 
     public List<Run> runList(Map params){
         int account_id = MapUtils.getInteger(params,"account_id",0);
+        Account account = accountMapper.selectByPrimaryKey(account_id);
+        if (account == null)
+            throw new BizException(Code.USER_NOT_EXIST);
         RunExample example = new RunExample();
         example.createCriteria().andAccountIdEqualTo(account_id);
         List<Run> list = runMapper.selectByExample(example);
@@ -43,6 +47,9 @@ public class RunService {
     }
 
     public List<Run> runList(int account_id){
+        Account account = accountMapper.selectByPrimaryKey(account_id);
+        if (account == null)
+            throw new BizException(Code.USER_NOT_EXIST);
         RunExample example = new RunExample();
         example.createCriteria().andAccountIdEqualTo(account_id);
         List<Run> list = runMapper.selectByExample(example);
@@ -59,7 +66,7 @@ public class RunService {
         return list;
     }
 
-    public void runInsert(Map params){
+    public Run runInsert(HttpServletRequest request,Map params){
         int account_id = MapUtils.getInteger(params,"account_id",0);
         Account account = accountMapper.selectByPrimaryKey(account_id);
         if (account == null)
@@ -77,7 +84,9 @@ public class RunService {
         String cover = MapUtils.getString(params,"cover","");
         String city = MapUtils.getString(params,"city","");
         String district = MapUtils.getString(params,"district","");
-        Date create_at = (Date) MapUtils.getObject(params,"create_at",new Date());
+        long create_at = MapUtils.getLongValue(params,"create_at",System.currentTimeMillis());
+        Date create_at_date = new Date(create_at);
+//        Date create_at = (Date) MapUtils.getObject(params,"create_at",new Date());
         Run run = new Run();
         run.setAccountId(account_id);
         run.setLongitude(longitude);
@@ -93,10 +102,11 @@ public class RunService {
         run.setCover(cover);
         run.setCity(city);
         run.setDistrict(district);
-        run.setCreateAt(create_at);
+        run.setCreateAt(create_at_date);
         int insert = runMapper.insertSelective(run);
         if (insert != 1)
             throw new BizException(Code.FAIL_DATABASE_INSERT);
+        return run;
     }
 
     public void runInsertBatch(Map params){
