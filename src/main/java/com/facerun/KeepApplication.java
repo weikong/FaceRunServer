@@ -20,6 +20,6 @@ public class KeepApplication implements EmbeddedServletContainerCustomizer {
 
 	@Override
 	public void customize(ConfigurableEmbeddedServletContainer configurableEmbeddedServletContainer) {
-		configurableEmbeddedServletContainer.setPort(9090);
+		configurableEmbeddedServletContainer.setPort(80);
 	}
 }
