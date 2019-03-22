@@ -18,6 +18,7 @@ public class FileUtil {
         if (file.exists()) {
             //response.setContentType("application/force-download");// 设置强制下载不打开
             response.setContentType(MediaType.APPLICATION_OCTET_STREAM.toString());
+            response.addHeader("Content-type","application/txt");
             response.addHeader("Content-Disposition",
                     "attachment;fileName=" + fileName);// 设置文件名
             byte[] buffer = new byte[1024];

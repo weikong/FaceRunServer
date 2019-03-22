@@ -1,7 +1,7 @@
 /**
  * Created by xinzhendi-031 on 2018/6/5.
  */
-function queryCircle() {
+/*function queryCircle() {
     var url = "/fit/query";
     var request = new XMLHttpRequest();
     request.onload = function () {
@@ -24,7 +24,7 @@ function queryCircles() {
     };
     request.open("POST", url);
     request.send(null);
-}
+}*/
 
 /**
  * jQuery GET 访问
@@ -39,8 +39,9 @@ function jQueryGetTask(){
  * jQuery POST 访问
  * */
 function jQueryPostTask(){
-    $.post('/test_rest/test2',param,function(data,status){
+    $.post('/circle/query',param,function(data,status){
         console.log(data);
+        return data;
     })
 }
 
@@ -95,15 +96,35 @@ function ajaxPostTask(){
  * ajax POST 访问
  * 带参数：param
  * */
+// function ajaxPostParamTask(){
+//     $.ajax({
+//         type: 'POST',
+//         url: '/test_rest/test2',
+//         data: {
+//             param:"Donald Duck2"
+//         },
+//         success: function(o){
+//             console.log(o);
+//         },
+//         error: function (e) {
+//             alert("error");
+//         }
+//     });
+// }
+
+/**
+ * ajax POST 访问
+ * 带参数：param
+ * */
 function ajaxPostParamTask(){
     $.ajax({
         type: 'POST',
-        url: '/test_rest/test2',
+        url: '/download_file',
         data: {
-            param:"Donald Duck2"
+            filename:"test2.zip"
         },
         success: function(o){
-            console.log(o);
+            alert("success");
         },
         error: function (e) {
             alert("error");

@@ -121,6 +121,10 @@
         <table tableName="circleshare" domainObjectName="CircleShare">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
+        <!--fruit 水果表-->
+        <table tableName="fruit" domainObjectName="Fruit">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
     </context>
 
 </generatorConfiguration>
