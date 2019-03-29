@@ -75,12 +75,12 @@ public class FileController extends AbsController {
 
     //文件下载相关代码
     @RequestMapping("/download")
-    public void downloadFile(org.apache.catalina.servlet4preview.http.HttpServletRequest request, HttpServletResponse response) {
+    public void downloadFile(HttpServletRequest request, HttpServletResponse response) {
         String fileName = "logo.png";
         if (fileName != null) {
             //当前是从该工程的WEB-INF//File//下获取文件(该目录可以在下面一行代码配置)然后下载到C:\\users\\downloads即本机的默认下载的目录
-            String realPath = request.getServletContext().getRealPath(
-                    "//WEB-INF//");
+//            String realPath = request.getServletContext().getRealPath(
+//                    "//WEB-INF//");
             String filePath = Config.DEFAULT_UPLOAD_FILE_PATH;
             File file = new File(filePath, fileName);
             FileUtil.downloadFile(file, fileName, response);

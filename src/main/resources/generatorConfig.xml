@@ -42,86 +42,65 @@
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
-        <!-- 数据库表配置 -->
-        <!--用户表-->
         <table tableName="account" domainObjectName="Account">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
-        <!--跑步数据表-->
         <table tableName="run" domainObjectName="Run">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
-        <!--跑友圈数据表-->
         <table tableName="circle" domainObjectName="Circle">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
-        <!--fit数据表-->
         <table tableName="fit" domainObjectName="Fit">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
-        <!--fitplan数据表-->
         <table tableName="fitplan" domainObjectName="FitPlan">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
-        <!--PetBrowseHistory浏览历史数据表-->
         <table tableName="petbrowsehistory" domainObjectName="PetBrowseHistory">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
-        <!--PetComment评论数据表-->
         <table tableName="petcomment" domainObjectName="PetComment">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
-        <!--PetProduct商品数据表-->
         <table tableName="petproduct" domainObjectName="PetProduct">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
-        <!--PetCategary分类数据表-->
         <table tableName="petcategary" domainObjectName="PetCategary">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
 
-        <!--PetDating 约会数据表-->
         <table tableName="petdating" domainObjectName="PetDating">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
-        <!--PetLookfor 寻找数据表-->
         <table tableName="petlookfor" domainObjectName="PetLookfor">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
-        <!--PetProductCategary 产品分类数据表-->
         <table tableName="petproductcategary" domainObjectName="PetProductCategary">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
-        <!--PetService 服务数据表-->
         <table tableName="petservice" domainObjectName="PetService">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
 
-        <!--PetProductFood 服务数据表-->
         <table tableName="petproductfood" domainObjectName="PetProductFood">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
-        <!--PetCompany 服务数据表-->
         <table tableName="petcompany" domainObjectName="PetCompany">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
-        <!--food 食物数据表-->
         <table tableName="food" domainObjectName="Food">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
-        <!--circlereply 评论表-->
         <table tableName="circlereply" domainObjectName="CircleReply">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
-        <!--circlelike 点赞表-->
         <table tableName="circlelike" domainObjectName="CircleLike">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
-        <!--circleshare 分享表-->
         <table tableName="circleshare" domainObjectName="CircleShare">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
-        <!--fruit 水果表-->
         <table tableName="fruit" domainObjectName="Fruit">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
