@@ -104,6 +104,12 @@
         <table tableName="fruit" domainObjectName="Fruit">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
+        <table tableName="fruitpricetype" domainObjectName="FruitPriceType">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="address" domainObjectName="Address">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
     </context>
 
 </generatorConfiguration>
