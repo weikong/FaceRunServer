@@ -110,6 +110,15 @@
         <table tableName="address" domainObjectName="Address">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
+        <table tableName="cart" domainObjectName="Cart">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="order" domainObjectName="Order">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="orderitem" domainObjectName="OrderItem">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
     </context>
 
 </generatorConfiguration>

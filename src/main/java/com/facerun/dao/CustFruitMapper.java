@@ -12,4 +12,6 @@ public interface CustFruitMapper {
 
     List<Map> queryFruitById(Map params);
 
+    List<Map> queryFruitOrderById(Map params);
+
 }
