@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.facerun.dao.CustCartMapper">
+
+    <select id="queryFruitCartById" parameterType="java.util.Map" resultType="com.facerun.bean.Record">
+        SELECT
+        a.name,a.phone,f.fname,f.fdesc,f.fimages,fpt.type,fpt.price,c.count
+        FROM cart c
+        INNER JOIN account a on a.id = c.accountid
+        INNER JOIN fruit f on f.id = c.productid
+        INNER JOIN fruitpricetype fpt on fpt.id = c.pricetype
+        WHERE c.accountid=#{account_id}
+    </select>
+</mapper>

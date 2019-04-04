@@ -29,6 +29,8 @@ public class CartService {
 
     @Autowired
     private CartMapper cartMapper;
+    @Autowired
+    private CustCartMapper custCartMapper;
 
     /**
      * 水果
@@ -38,9 +40,7 @@ public class CartService {
         int account_id = MapUtils.getInteger(params, "account_id",-1);
         if (account_id <= 0)
             throw new BizException(Code.PARAMS_MISS);
-        CartExample example = new CartExample();
-        example.createCriteria().andAccountidEqualTo(account_id);
-        List<Cart> list = cartMapper.selectByExample(example);
+        List<Map> list = custCartMapper.queryFruitCartById(params);
         return list;
     }
 

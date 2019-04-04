@@ -92,14 +92,13 @@ public class FruitService {
         int account_id = MapUtils.getInteger(params, "account_id",-1);
         if (order_id <= 0 || account_id <= 0)
             throw new BizException(Code.PARAMS_MISS);
-//        OrderItemExample example = new OrderItemExample();
-//        example.createCriteria().andOrderidEqualTo(order_id).andAccountidEqualTo(account_id);
-//        List<OrderItem> list = orderItemMapper.selectByExample(example);
         Map map = new HashMap();
         map.put("order_id",order_id);
         map.put("account_id",account_id);
-        custFruitMapper.queryFruitOrderById(map);
-        return null;
+        List<Map> list = custFruitMapper.queryFruitOrderById(map);
+        map.clear();
+        map.put("order",list);
+        return map;
     }
 
     /**

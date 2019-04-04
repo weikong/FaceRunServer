@@ -8,4 +8,15 @@
         FROM fruit f
         WHERE f.id = #{id}
     </select>
+
+    <select id="queryFruitOrderById" parameterType="java.util.Map" resultType="com.facerun.bean.Record">
+        SELECT
+        a.name,a.phone,f.fname,f.fdesc,f.fimages,addr.city,addr.village,fpt.type,fpt.price,oi.count
+        FROM orderitem oi
+        INNER JOIN account a on a.id = oi.accountid
+        INNER JOIN fruit f on f.id = oi.productid
+        INNER JOIN address addr on addr.id = oi.addressid
+        INNER JOIN fruitpricetype fpt on fpt.id = oi.pricetype
+        WHERE oi.orderid=#{order_id} AND oi.accountid=#{account_id}
+    </select>
 </mapper>
