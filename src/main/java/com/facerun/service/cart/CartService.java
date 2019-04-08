@@ -1,20 +1,20 @@
 package com.facerun.service.cart;
 
-import com.facerun.bean.*;
-import com.facerun.dao.*;
+import com.facerun.bean.Cart;
+import com.facerun.bean.CartExample;
+import com.facerun.bean.FruitPriceType;
+import com.facerun.dao.CartMapper;
+import com.facerun.dao.CustCartMapper;
+import com.facerun.dao.FruitPriceTypeMapper;
 import com.facerun.exception.BizException;
 import com.facerun.util.Code;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,12 +31,14 @@ public class CartService {
     private CartMapper cartMapper;
     @Autowired
     private CustCartMapper custCartMapper;
+    @Autowired
+    private FruitPriceTypeMapper fruitPriceTypeMapper;
 
     /**
      * 水果
      * 查询购物车
      * */
-    public Object queryFruitList(Map params){
+    public Object queryFruitCarts(Map params){
         int account_id = MapUtils.getInteger(params, "account_id",-1);
         if (account_id <= 0)
             throw new BizException(Code.PARAMS_MISS);
@@ -51,30 +53,69 @@ public class CartService {
     public Object createFruitCart(Map params){
         int account_id = MapUtils.getInteger(params, "account_id",-1);
         int product_id = MapUtils.getInteger(params, "product_id",-1);
-        int address_id = MapUtils.getInteger(params, "address_id",-1);
-        String price_type = MapUtils.getString(params, "price_type","");
-        int price = MapUtils.getInteger(params, "price",-1);
-        if (account_id <= 0 || product_id <= 0 || StringUtils.isEmpty(price_type))
+        int count = MapUtils.getInteger(params, "count",1);
+        int price_type = MapUtils.getInteger(params, "price_type",-1);
+        if (account_id <= 0 || product_id <= 0 || price_type <= 0 || count <= 0)
             throw new BizException(Code.PARAMS_MISS);
-        Cart cart = new Cart();
-        cart.setAccountid(account_id);
-        cart.setProductid(1);
-        cart.setAddressid(1);
-        cart.setPricetype("1");
-        cart.setPrice(BigDecimal.valueOf(25));
-        cart.setCount(2);
-        int insert = cartMapper.insertSelective(cart);
-        if (insert != 1){
-            throw new BizException(Code.FAIL_DATABASE_INSERT);
+        CartExample example = new CartExample();
+        example.createCriteria().andAccountidEqualTo(account_id).andProductidEqualTo(product_id).andPricetypeEqualTo(""+price_type);
+        List<Cart> list = cartMapper.selectByExample(example);
+        Cart cart = null;
+        if (list != null && list.size() > 0){
+            cart = list.get(0);
+            cart.setCount(cart.getCount()+1);
+            int update = cartMapper.updateByPrimaryKey(cart);
+            if (update != 1){
+                throw new BizException(Code.FAIL_DATABASE_UPDATE);
+            }
+        } else {
+            cart = new Cart();
+            cart.setAccountid(account_id);
+            cart.setProductid(product_id);
+            cart.setPricetype(""+price_type);
+            if (price_type > 0){
+                FruitPriceType fruitPriceType = fruitPriceTypeMapper.selectByPrimaryKey(price_type);
+                cart.setPrice(fruitPriceType.getPrice());
+            }
+            cart.setCount(count);
+            int insert = cartMapper.insertSelective(cart);
+            if (insert != 1){
+                throw new BizException(Code.FAIL_DATABASE_INSERT);
+            }
         }
-        return insert;
+
+        return cart;
+    }
+
+    /**
+     * 水果
+     * 更新购物车
+     * */
+    public Object updateFruitCart(Map params){
+        int account_id = MapUtils.getInteger(params, "account_id",-1);
+        int product_id = MapUtils.getInteger(params, "product_id",-1);
+        int count = MapUtils.getInteger(params, "count",-1);
+        int cart_id = MapUtils.getInteger(params, "cart_id",-1);
+        if (account_id <= 0 || product_id <= 0 || cart_id <= 0 || count <= 0)
+            throw new BizException(Code.PARAMS_MISS);
+        Cart cart = cartMapper.selectByPrimaryKey(cart_id);
+        if (cart != null && cart.getAccountid() == account_id && cart.getProductid() == product_id){
+            cart.setCount(count);
+            int update = cartMapper.updateByPrimaryKeySelective(cart);
+            if (update != 1){
+                throw new BizException(Code.FAIL_DATABASE_UPDATE);
+            }
+        } else {
+            throw new BizException(Code.DATA_ERROR);
+        }
+        return cart;
     }
 
     /**
      * 水果
      * 删除购物车中某条数据
      * */
-    public Object delFruitById(Map params){
+    public Object delCartFruitById(Map params){
         int cart_id = MapUtils.getInteger(params, "cart_id",-1);
         int account_id = MapUtils.getInteger(params, "account_id",-1);
         if (cart_id <= 0 || account_id <= 0)

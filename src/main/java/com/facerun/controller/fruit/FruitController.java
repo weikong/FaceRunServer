@@ -1,24 +1,16 @@
 package com.facerun.controller.fruit;
 
 
-import com.facerun.bean.*;
 import com.facerun.controller.AbsController;
-import com.facerun.dao.*;
 import com.facerun.exception.BizException;
 import com.facerun.service.fruit.FruitService;
 import com.facerun.util.Code;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.thymeleaf.util.TextUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -69,7 +61,7 @@ public class FruitController extends AbsController {
      */
     @RequestMapping(value = "/order/creat_order", method = {RequestMethod.POST, RequestMethod.GET})
     @ResponseBody
-    public Object creatOrder(@RequestParam Map params, Model model) {
+    public Object creatOrder(@RequestBody String params, Model model) {
         try {
             return ajax(fruitService.createOrder(params));
         } catch (BizException e) {

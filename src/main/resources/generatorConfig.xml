@@ -113,7 +113,7 @@
         <table tableName="cart" domainObjectName="Cart">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
-        <table tableName="order" domainObjectName="Order">
+        <table tableName="orders" domainObjectName="Orders">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
         <table tableName="orderitem" domainObjectName="OrderItem">

@@ -1,15 +1,15 @@
 package com.facerun.controller;
 
 
-import com.alibaba.fastjson.JSONObject;
 import com.facerun.bean.Food;
 import com.facerun.bean.FoodExample;
-import com.facerun.bean.Run;
 import com.facerun.dao.FoodMapper;
 import com.facerun.dao.RunMapper;
+import com.facerun.exception.BizException;
+import com.facerun.service.order.OrderService;
+import com.facerun.util.Code;
 import com.facerun.util.HttpUtil;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,6 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,9 +33,58 @@ public class TestRestController extends AbsController {
 
     @Autowired
     private RunMapper runMapper;
-
     @Autowired
     private FoodMapper foodMapper;
+    @Autowired
+    private OrderService orderService;
+
+    @RequestMapping(value = "/query_order", method = {RequestMethod.POST, RequestMethod.GET})
+    @ResponseBody
+    public Object queryOrder(@RequestParam Map params, Model model) {
+        try {
+            return ajax(orderService.queryList(params));
+        } catch (BizException e) {
+            return ajax(e);
+        } catch (Exception e) {
+            return ajax(Code.FAIL);
+        }
+    }
+
+    @RequestMapping(value = "/add", method = {RequestMethod.POST, RequestMethod.GET})
+    @ResponseBody
+    public Object add(@RequestParam Map params, Model model) {
+        try {
+            Object o = orderService.createOrder(params);
+            try {
+                orderService.queryOrdersList(params);
+            }catch (Exception e){
+
+            }
+            return ajax(o);
+        } catch (BizException e) {
+            return ajax(e);
+        } catch (Exception e) {
+            return ajax(Code.FAIL);
+        }
+    }
+
+    @RequestMapping(value = "/del", method = {RequestMethod.POST, RequestMethod.GET})
+    @ResponseBody
+    public Object del(@RequestParam Map params, Model model) {
+        try {
+            Object o = orderService.delOrderById(params);
+            try {
+                orderService.queryOrdersList(params);
+            }catch (Exception e){
+
+            }
+            return ajax(o);
+        } catch (BizException e) {
+            return ajax(e);
+        } catch (Exception e) {
+            return ajax(Code.FAIL);
+        }
+    }
 
     /**
      */

@@ -10,10 +10,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by xinzhendi-031 on 2017/12/1.
@@ -32,13 +36,14 @@ public class FruitService {
     @Autowired
     private AddressMapper addressMapper;
     @Autowired
-    private OrderMapper orderMapper;
+    private OrdersMapper ordersMapper;
     @Autowired
     private OrderItemMapper orderItemMapper;
 
     /**
      * 查询水果商品列表
      * */
+    @Cacheable("fruits")
     public Object queryList(Map params){
         FruitExample example = new FruitExample();
         List<Fruit> list = fruitMapper.selectByExample(example);
@@ -48,6 +53,7 @@ public class FruitService {
     /**
      * 查询单个水果商品详情
      * */
+    @Cacheable("fruit_detail")
     public Object queryDetailById(Map params){
         int id = MapUtils.getInteger(params, "id",-1);
         if (id <= 0)
@@ -79,9 +85,55 @@ public class FruitService {
 
     /**
      * 创建订单
+     * {"account_id":3,"addressid":1,"fruits":[{"productid":1,"addressid":1,"pricetype":4,"count":2},{"productid":2,"addressid":1,"pricetype":22,"count":1}]}
      * */
-    public Object createOrder(Map params){
-        return null;
+    public Object createOrder(String params){
+        if (StringUtils.isEmpty(params))
+            throw new BizException(Code.PARAMS_MISS);
+        FruitOrderBean fruitOrderBean = JSONObject.parseObject(params,FruitOrderBean.class);
+        int account_id = fruitOrderBean.getAccount_id();
+        if (account_id <= 0)
+            throw new BizException(Code.PARAMS_MISS);
+        List<FruitOrdersItemBean> list = fruitOrderBean.getFruits();
+        if (list == null || list.size() == 0){
+            throw new BizException(Code.DATA_ERROR);
+        }
+        Orders order = new Orders();
+        order.setAccountId(account_id);
+        int addressid = fruitOrderBean.getAddressid();
+        if (addressid <= 0){
+            AddressExample addressExample = new AddressExample();
+            addressExample.createCriteria().andAccountidEqualTo(account_id).andIsdefaultEqualTo((byte) 1);
+            List<Address> addressList = addressMapper.selectByExample(addressExample);
+            if (addressList != null && addressList.size() > 0){
+                Address address = addressList.get(0);
+                addressid = address.getId();
+            }
+        }
+        order.setAddressid(addressid);
+        int insertOrders = ordersMapper.insertSelective(order);
+        if (insertOrders != 1){
+            throw new BizException(Code.FAIL_DATABASE_INSERT);
+        }
+        for (FruitOrdersItemBean item : list){
+            OrderItem oi = new OrderItem();
+            oi.setOrderid(order.getId());
+            oi.setAccountid(account_id);
+            oi.setProductid(item.getProductid());
+            int pricetype = item.getPricetype();
+            if (pricetype > 0){
+                oi.setPricetype(""+pricetype);
+                FruitPriceType fruitPriceType = fruitPriceTypeMapper.selectByPrimaryKey(pricetype);
+                oi.setPrice(fruitPriceType.getPrice());
+            }
+            oi.setCount(item.getCount());
+            oi.setGift(item.getGift());
+            int insert = orderItemMapper.insertSelective(oi);
+            if (insert != 1){
+                throw new BizException(Code.FAIL_DATABASE_INSERT);
+            }
+        }
+        return order;
     }
 
     /**
@@ -120,7 +172,9 @@ public class FruitService {
                 }
             }
         }
-        int delOrder = orderMapper.deleteByPrimaryKey(order_id);
+        OrdersExample example = new OrdersExample();
+        example.createCriteria().andAccountIdEqualTo(account_id).andIdEqualTo(order_id);
+        int delOrder =  ordersMapper.deleteByExample(example);
         if (delOrder != 1){
             throw new BizException(Code.FAIL_DATABASE_DEL);
         }

@@ -4,7 +4,6 @@ package com.facerun.controller.cart;
 import com.facerun.controller.AbsController;
 import com.facerun.exception.BizException;
 import com.facerun.service.cart.CartService;
-import com.facerun.service.fruit.FruitService;
 import com.facerun.util.Code;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +33,7 @@ public class CartController extends AbsController {
     @ResponseBody
     public Object queryFruitList(@RequestParam Map params, Model model) {
         try {
-            return ajax(cartService.queryFruitList(params));
+            return ajax(cartService.queryFruitCarts(params));
         } catch (BizException e) {
             return ajax(e);
         } catch (Exception e) {
@@ -60,13 +59,29 @@ public class CartController extends AbsController {
 
     /**
      * 水果
+     * 更新购物车
+     * */
+    @RequestMapping(value = "/update_fruit", method = {RequestMethod.POST, RequestMethod.GET})
+    @ResponseBody
+    public Object updateFruitCart(@RequestParam Map params, Model model) {
+        try {
+            return ajax(cartService.updateFruitCart(params));
+        } catch (BizException e) {
+            return ajax(e);
+        } catch (Exception e) {
+            return ajax(Code.FAIL);
+        }
+    }
+
+    /**
+     * 水果
      * 删除购物车中某条数据
      * */
-    @RequestMapping(value = "/del_fruit_by_id", method = {RequestMethod.POST, RequestMethod.GET})
+    @RequestMapping(value = "/del_cart_fruit_by_id", method = {RequestMethod.POST, RequestMethod.GET})
     @ResponseBody
-    public Object delFruitById(@RequestParam Map params, Model model) {
+    public Object delCartFruitById(@RequestParam Map params, Model model) {
         try {
-            return ajax(cartService.delFruitById(params));
+            return ajax(cartService.delCartFruitById(params));
         } catch (BizException e) {
             return ajax(e);
         } catch (Exception e) {
