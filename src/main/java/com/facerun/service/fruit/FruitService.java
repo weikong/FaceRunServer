@@ -5,6 +5,7 @@ import com.facerun.bean.*;
 import com.facerun.dao.*;
 import com.facerun.exception.BizException;
 import com.facerun.service.AccountService;
+import com.facerun.service.cart.CartService;
 import com.facerun.util.Code;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,6 +42,8 @@ public class FruitService {
     private OrderItemMapper orderItemMapper;
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private CartService cartService;
 
     /**
      * 查询水果商品列表
@@ -74,6 +77,8 @@ public class FruitService {
                     Account account = accountService.accountSelect(account_id);
                     item.put("name",account.getName());
                     item.put("phone",account.getPhone());
+                    int myCartNum = cartService.queryCartNumByAccountid(account_id);
+                    item.put("cartnum",myCartNum);
                     AddressExample addressExample = new AddressExample();
                     addressExample.createCriteria().andAccountidEqualTo(account_id);
                     addressExample.setOrderByClause("isdefault desc,id desc");

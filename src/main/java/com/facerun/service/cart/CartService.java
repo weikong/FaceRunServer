@@ -126,4 +126,23 @@ public class CartService {
         }
         return del;
     }
+
+    /**
+     * 水果
+     * 删除购物车中某条数据
+     * */
+    public int queryCartNumByAccountid(int account_id){
+        int myCartNum = 0;
+        if (account_id > 0){
+            CartExample example = new CartExample();
+            example.createCriteria().andAccountidEqualTo(account_id);
+            List<Cart> list = cartMapper.selectByExample(example);
+            for (Cart cart : list){
+                if (cart != null){
+                    myCartNum += cart.getCount();
+                }
+            }
+        }
+        return myCartNum;
+    }
 }
