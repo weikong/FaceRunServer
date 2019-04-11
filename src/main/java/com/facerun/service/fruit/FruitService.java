@@ -4,13 +4,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.facerun.bean.*;
 import com.facerun.dao.*;
 import com.facerun.exception.BizException;
+import com.facerun.service.AccountService;
 import com.facerun.util.Code;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,11 +39,12 @@ public class FruitService {
     private OrdersMapper ordersMapper;
     @Autowired
     private OrderItemMapper orderItemMapper;
+    @Autowired
+    private AccountService accountService;
 
     /**
      * 查询水果商品列表
      * */
-    @Cacheable("fruits")
     public Object queryList(Map params){
         FruitExample example = new FruitExample();
         List<Fruit> list = fruitMapper.selectByExample(example);
@@ -53,7 +54,6 @@ public class FruitService {
     /**
      * 查询单个水果商品详情
      * */
-    @Cacheable("fruit_detail")
     public Object queryDetailById(Map params){
         int id = MapUtils.getInteger(params, "id",-1);
         if (id <= 0)
@@ -71,8 +71,12 @@ public class FruitService {
                 List<Address> addresses = new ArrayList<>();
                 int account_id = MapUtils.getInteger(params, "account_id",-1);
                 if (account_id > 0){
+                    Account account = accountService.accountSelect(account_id);
+                    item.put("name",account.getName());
+                    item.put("phone",account.getPhone());
                     AddressExample addressExample = new AddressExample();
                     addressExample.createCriteria().andAccountidEqualTo(account_id);
+                    addressExample.setOrderByClause("isdefault desc,id desc");
                     addresses = addressMapper.selectByExample(addressExample);
                 }
                 item.put("address",addresses);
