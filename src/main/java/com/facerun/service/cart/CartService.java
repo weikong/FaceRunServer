@@ -108,7 +108,7 @@ public class CartService {
         } else {
             throw new BizException(Code.DATA_ERROR);
         }
-        return cart;
+        return queryFruitCarts(params);
     }
 
     /**

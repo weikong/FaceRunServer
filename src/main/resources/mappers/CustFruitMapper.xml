@@ -11,7 +11,7 @@
 
     <select id="queryFruitOrderById" parameterType="java.util.Map" resultType="com.facerun.bean.Record">
         SELECT
-        a.name,a.phone,f.fname,f.fdesc,f.fimages,addr.city,addr.village,fpt.type,fpt.price,oi.pricetype,oi.count,oi.orderid
+        a.name,a.phone,f.fname,f.fdesc,f.fimages,addr.city,addr.village,fpt.type,fpt.price,oi.pricetype,oi.count,oi.orderid,oi.productid
         FROM orderitem oi
         INNER JOIN account a on a.id = oi.accountid
         INNER JOIN fruit f on f.id = oi.productid
