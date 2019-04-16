@@ -4,7 +4,7 @@
 
     <select id="queryFruitCartById" parameterType="java.util.Map" resultType="com.facerun.bean.Record">
         SELECT
-        a.name,a.phone,f.fname,f.fdesc,f.fimages,fpt.type,fpt.price,c.count
+        a.name,a.phone,f.fname,f.fdesc,f.fimages,fpt.type,fpt.price,c.productid,c.count,c.pricetype
         FROM cart c
         INNER JOIN account a on a.id = c.accountid
         INNER JOIN fruit f on f.id = c.productid
