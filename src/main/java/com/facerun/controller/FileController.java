@@ -1,9 +1,11 @@
 package com.facerun.controller;
 
 import com.facerun.bean.FileUploadImageBean;
+import com.facerun.config.Constant;
 import com.facerun.util.Code;
 import com.facerun.util.Config;
 import com.facerun.util.FileUtil;
+import com.facerun.util.ReadVideo;
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +14,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.thymeleaf.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +22,8 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by xinzhendi-031 on 2017/7/14.
@@ -28,6 +33,8 @@ public class FileController extends AbsController {
 
     private static final Logger logger = LoggerFactory.getLogger(FileController.class);
 
+    private static final ExecutorService executors = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() + 1);
+
     @RequestMapping("/greeting")
     public String greeting(@RequestParam(value = "name", required = false, defaultValue = "World") String name, Model model) {
         model.addAttribute("name", name);
@@ -35,7 +42,7 @@ public class FileController extends AbsController {
     }
 
     //文件上传相关代码
-    @RequestMapping(value = "upload")
+    @RequestMapping(value = "/upload")
     @ResponseBody
     public String upload(@RequestParam("test") MultipartFile file) {
         if (file.isEmpty()) {
@@ -163,21 +170,21 @@ public class FileController extends AbsController {
         BufferedOutputStream stream = null;
         List<FileUploadImageBean> fileList = new ArrayList<>();
         // 文件上传后的路径
-        String filePath = Config.DEFAULT_UPLOAD_FILE_PATH;
+        final String filePath = Config.DEFAULT_UPLOAD_FILE_PATH;
         StringBuffer resultMsg = new StringBuffer();
         for (int i = 0; i < files.size(); ++i) {
             file = files.get(i);
             if (!file.isEmpty()) {
-                FileUploadImageBean bean = new FileUploadImageBean();
+                final FileUploadImageBean bean = new FileUploadImageBean();
                 String fileName = "";
                 try {
                     fileName = file.getOriginalFilename();
                     // 获取文件的后缀名
-                    String suffixName = fileName.substring(fileName.lastIndexOf("."));
+                    final String suffixName = fileName.substring(fileName.lastIndexOf("."));
                     // 解决中文问题，liunx下中文路径，图片显示问题
-                    String strUUID = UUID.randomUUID().toString();
-                    String mFileName = strUUID + suffixName;
-                    File dest = new File(filePath + mFileName);
+                    final String strUUID = UUID.randomUUID().toString();
+                    final String mFileName = strUUID + suffixName;
+                    final File dest = new File(filePath + mFileName);
                     // 检测是否存在目录
                     if (!dest.getParentFile().exists()) {
                         dest.getParentFile().mkdirs();
@@ -187,11 +194,28 @@ public class FileController extends AbsController {
                     long t2 = System.currentTimeMillis();
                     logger.error("文件上传耗时：" + (t2 - t1));
                     bean.setFileName(fileName);
-                    bean.setFileNameMD5(mFileName);
+                    bean.setFilePathMD5(Constant.HTTP_ROOT + mFileName);
                     bean.setSuffix(suffixName);
-                    bean.setFileNameThumb(strUUID + "_thumb" + suffixName);
-//                    FileUtil.reduceImg(dest.getAbsolutePath(), filePath + bean.getFileNameThumb());
-                    FileUtil.cropImage(dest.getAbsolutePath(), filePath + bean.getFileNameThumb());
+                    if (!StringUtils.isEmpty(suffixName) && suffixName.toLowerCase().endsWith("mp4")) {
+                        bean.setFilePathMD5Thumb(Constant.HTTP_ROOT + strUUID + ".jpg");
+                    } else {
+//                        bean.setFilePathMD5Thumb(Constant.HTTP_ROOT+strUUID + "_thumb" + suffixName);
+                        bean.setFilePathMD5Thumb(Constant.HTTP_ROOT + mFileName);
+                    }
+                    executors.submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+//                                FileUtil.cropImage(dest.getAbsolutePath(), filePath + strUUID + "_thumb" + suffixName);
+                                if (!StringUtils.isEmpty(suffixName) && suffixName.toLowerCase().endsWith("mp4")) {
+//                                    ReadVideo.fetchFrame2(Constant.UPLOAD_FILE_PATH + mFileName, Constant.UPLOAD_FILE_PATH);
+                                    ReadVideo.getScreenshot(dest.getAbsolutePath(),strUUID+".jpg");
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
                     fileList.add(bean);
                 } catch (IllegalStateException e) {
                     e.printStackTrace();

@@ -9,8 +9,8 @@ public class FileUploadImageBean extends AbsDomain implements Serializable {
 
     private String fileName;
     private String suffix;
-    private String fileNameMD5;
-    private String fileNameThumb;
+    private String filePathMD5;
+    private String filePathMD5Thumb;
 
     public String getFileName() {
         return fileName;
@@ -28,19 +28,19 @@ public class FileUploadImageBean extends AbsDomain implements Serializable {
         this.suffix = suffix;
     }
 
-    public String getFileNameMD5() {
-        return fileNameMD5;
+    public String getFilePathMD5() {
+        return filePathMD5;
     }
 
-    public void setFileNameMD5(String fileNameMD5) {
-        this.fileNameMD5 = fileNameMD5;
+    public void setFilePathMD5(String filePathMD5) {
+        this.filePathMD5 = filePathMD5;
     }
 
-    public String getFileNameThumb() {
-        return fileNameThumb;
+    public String getFilePathMD5Thumb() {
+        return filePathMD5Thumb;
     }
 
-    public void setFileNameThumb(String fileNameThumb) {
-        this.fileNameThumb = fileNameThumb;
+    public void setFilePathMD5Thumb(String filePathMD5Thumb) {
+        this.filePathMD5Thumb = filePathMD5Thumb;
     }
 }
