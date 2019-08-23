@@ -1,16 +1,10 @@
 package com.facerun.controller.food;
 
 
-import com.facerun.bean.Account;
 import com.facerun.bean.Food;
 import com.facerun.bean.FoodExample;
-import com.facerun.bean.Record;
 import com.facerun.controller.AbsController;
-import com.facerun.dao.CustUserMapper;
 import com.facerun.dao.FoodMapper;
-import com.facerun.exception.BizException;
-import com.facerun.service.AccountService;
-import com.facerun.util.Code;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -19,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

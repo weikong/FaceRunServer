@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: product
+    active: company
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     sql-script-encoding: utf-8
@@ -89,8 +89,11 @@ spring:
   mongodb:
     url: mongodb://172.16.3.223
     dbname: mmx
+  mvc:
+    static-path-pattern: /**
+#  访问外网路径
   resources:
-    static-locations: classpath:/public/
+    static-locations: file:D://UpLoadPath
   beetl:
     cache: false
     template-loader-path: /templates/

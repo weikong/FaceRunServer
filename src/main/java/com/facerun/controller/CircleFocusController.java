@@ -2,7 +2,7 @@ package com.facerun.controller;
 
 
 import com.facerun.exception.BizException;
-import com.facerun.service.CircleLikeService;
+import com.facerun.service.CircleFocusService;
 import com.facerun.util.Code;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,20 +15,20 @@ import java.util.Map;
 /**
  * 用户相关操作
  */
-@RequestMapping("/circle/like")
+@RequestMapping("/circle/focus")
 @RestController
-public class CircleLikeController extends AbsController {
+public class CircleFocusController extends AbsController {
 
-    private static final Logger log = LoggerFactory.getLogger(CircleLikeController.class);
+    private static final Logger log = LoggerFactory.getLogger(CircleFocusController.class);
 
     @Autowired
-    private CircleLikeService circleLikeService;
+    private CircleFocusService circleFocusService;
 
     @PostMapping("/query")
     @ResponseBody
     public Object query(@RequestParam Map params, Model model) {
         try {
-            return ajax(circleLikeService.queryCircleLike(params));
+            return ajax(circleFocusService.circleFocusQuery(params));
         } catch (BizException e) {
             log.error(e.getMessage());
             return ajax(e);
@@ -42,7 +42,7 @@ public class CircleLikeController extends AbsController {
     @ResponseBody
     public Object insert(@RequestParam Map params, Model model) {
         try {
-            circleLikeService.circleLikeInsert(params);
+            circleFocusService.circleFocusInsert(params);
             return ajax();
         } catch (BizException e) {
             log.error(e.getMessage());
@@ -52,12 +52,11 @@ public class CircleLikeController extends AbsController {
             return ajax(Code.FAIL);
         }
     }
-
     @PostMapping("/clear")
     @ResponseBody
     public Object clear(@RequestParam Map params, Model model) {
         try {
-            circleLikeService.circleLikeClear(params);
+            circleFocusService.circleFocusClear(params);
             return ajax();
         } catch (BizException e) {
             log.error(e.getMessage());

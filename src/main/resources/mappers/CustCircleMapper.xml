@@ -15,10 +15,33 @@
         <result column="run_id" jdbcType="BIGINT" property="runId"/>
     </resultMap>
 
+    <select id="getCircleAllList" resultMap="BaseResultMap">
+        SELECT
+        c.*,a.name
+        FROM circle c LEFT JOIN account a ON c.account_id=a.id
+        <where>
+            <if test="mediaType > 0">
+                c.mediatype = #{mediaType}
+            </if>
+        </where>
+        ORDER BY c.create_time DESC
+        <if test="beginNum !=null">
+            limit #{beginNum},#{limitSize}
+        </if>
+    </select>
+
     <select id="getCircleList" parameterType="java.util.Map" resultMap="BaseResultMap">
         SELECT
         c.*,a.name
         FROM circle c LEFT JOIN account a ON c.account_id=a.id
+        <where>
+            <if test="mediaType > 0">
+                c.mediatype = #{mediaType}
+            </if>
+            <if test="userId > 0">
+                c.account_id = #{userId}
+            </if>
+        </where>
         ORDER BY c.create_time DESC
         <if test="beginNum !=null">
             limit #{beginNum},#{limitSize}

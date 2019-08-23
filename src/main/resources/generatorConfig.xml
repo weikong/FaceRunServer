@@ -119,6 +119,12 @@
         <table tableName="orderitem" domainObjectName="OrderItem">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
+        <table tableName="circlefocus" domainObjectName="CircleFocus">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="circlecollection" domainObjectName="CircleCollection">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
     </context>
 
 </generatorConfiguration>
