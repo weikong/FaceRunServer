@@ -39,15 +39,15 @@ public class SocketChatTest {
             while (true) {
                 //步骤二，每接受到一个新Socket连接请求，就会新建一个Thread去处理与其之间的通信
                 client = server.accept();
-                String getHostAddress = client.getInetAddress().getHostAddress();
-                if (serviceMap.containsKey(getHostAddress)) {
-                    Service service = serviceMap.get(getHostAddress);
-                    service.setSocket(client);
-                } else {
+//                String getHostAddress = client.getInetAddress().getHostAddress();
+//                if (serviceMap.containsKey(getHostAddress)) {
+//                    Service service = serviceMap.get(getHostAddress);
+//                    service.setSocket(client);
+//                } else {
                     Service service = new Service(client);
-                    serviceMap.put(getHostAddress, service);
+//                    serviceMap.put(getHostAddress, service);
                     mExecutorService.execute(service);
-                }
+//                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -79,8 +79,8 @@ public class SocketChatTest {
             try {
                 printWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
-                printWriter.println(connectSuccess());
-                System.out.println(connectSuccess());
+//                printWriter.println(connectSuccess());
+//                System.out.println(connectSuccess());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -121,8 +121,22 @@ public class SocketChatTest {
                                 socket = null;
                                 break;
                             case 4: //Login
+                                if (printWriterMap.containsKey(socketBaseBean.getFrom())){
+                                    printWriterMap.get(socketBaseBean.getFrom()).println(disconnect());
+                                    System.out.println(disconnect());
+                                }
                                 printWriterMap.put(socketBaseBean.getFrom(), printWriter);
                                 printWriter.println(receiveMsg);
+
+                                String userId = socketBaseBean.getUserId();
+//                                String getHostAddress = socket.getInetAddress().getHostAddress();
+                                if (serviceMap.containsKey(userId)) {
+                                    Service service = serviceMap.get(userId);
+                                    service.setSocket(socket);
+                                } else {
+                                    serviceMap.put(userId, this);
+                                }
+
                                 break;
                             case 9: //聊天内容
                                 //向 Client 端反馈、发送信息
