@@ -25,7 +25,7 @@ logging:
   level:
     root: info
     my.app.sample: debug
-host: http://www.deepkeep.top
+host: https://deepkeep.top
 spring:
   profiles: product
   datasource:
@@ -47,8 +47,11 @@ spring:
   mongodb:
     url: mongodb://172.16.3.223
     dbname: mmx
+#  resources:
+#    static-locations: classpath:/public/
+#  访问外网路径
   resources:
-    static-locations: classpath:/public/
+    static-locations: file:/media/UpLoadPath
   beetl:
     cache: false
     template-loader-path: /templates/

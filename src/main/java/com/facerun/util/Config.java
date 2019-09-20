@@ -8,5 +8,7 @@ public class Config {
     public static final int pageSize = 20;
 //    public static final String DEFAULT_UPLOAD_FILE_PATH = "/home/facerun/UpLoadPath/"; //阿里云图片存储路径
 //    public static final String DEFAULT_UPLOAD_FILE_PATH = "/Users/kongwei/KongWeiUpload/Source/"; //Mac图片存储路径
-    public static final String DEFAULT_UPLOAD_FILE_PATH = "D://UpLoadPath/";//公司图片存储路径
+
+//    public static final String DEFAULT_UPLOAD_FILE_PATH = "D://UpLoadPath/";//公司图片存储路径
+//    public static final String DEFAULT_UPLOAD_FILE_PATH = "/media/UpLoadPath/";//华为云图片存储路径
 }

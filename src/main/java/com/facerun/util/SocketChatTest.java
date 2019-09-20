@@ -2,12 +2,20 @@ package com.facerun.util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.facerun.bean.ChatRecord;
+import com.facerun.bean.ChatRecordExample;
+import com.facerun.dao.ChatRecordMapper;
+import com.facerun.service.AccountService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.util.StringUtils;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -16,7 +24,14 @@ import java.util.concurrent.Executors;
 /**
  * Created by maesinfo on 2019/9/17.
  */
+@Service
+@Transactional
 public class SocketChatTest {
+
+    @Autowired
+    private ChatRecordMapper chatRecordMapper;
+    @Autowired
+    private AccountService accountService;
 
     private static final int PORT = 9999;
     private Map<String, PrintWriter> printWriterMap = new HashMap<>();
@@ -28,11 +43,11 @@ public class SocketChatTest {
     private ExecutorService mExecutorService = null;
     private String receiveMsg;
 
-    public static void main(String[] args) {
-        new SocketChatTest();
-    }
+//    public static void main(String[] args) {
+//        new SocketChatTest();
+//    }
 
-    public SocketChatTest() {
+    public void SocketChatTest() {
         try {
             //步骤一
             server = new ServerSocket(PORT);
@@ -173,8 +188,40 @@ public class SocketChatTest {
                                 printWriterMap.put(userId, printWriter);
                                 printWriter.println(JSON.toJSONString(socketBaseBean));
                                 break;
+                            case 5:
+                                try {
+                                    ChatRecordExample example = new ChatRecordExample();
+                                    example.createCriteria().andMessageidEqualTo(socketBaseBean.getMessageId());
+                                    List<ChatRecord> list = chatRecordMapper.selectByExample(example);
+                                    if (list != null && list.size() > 0){
+                                        for (ChatRecord chatRecord : list){
+                                            chatRecord.setMessagestate(1);
+                                            chatRecordMapper.updateByPrimaryKey(chatRecord);
+                                        }
+                                    }
+                                    printWriter.println(ackClient());
+                                } catch (Exception e){
+                                    e.printStackTrace();
+                                }
+                                break;
                             case 9: //聊天内容
                                 //向 Client 端反馈、发送信息
+                                printWriter.println(JSON.toJSONString(socketBaseBean));
+                                ChatRecord chatRecord = new ChatRecord();
+                                chatRecord.setMessagefrom(socketBaseBean.getFrom());
+                                chatRecord.setMessageto(socketBaseBean.getTo());
+                                chatRecord.setMessagecontent(socketBaseBean.getContent());
+                                chatRecord.setMessagetype(socketBaseBean.getType());
+                                chatRecord.setMessageid(socketBaseBean.getMessageId());
+                                chatRecord.setMessagestate(0);
+                                try {
+                                    int insert = chatRecordMapper.insert(chatRecord);
+                                    if (insert == 0)
+                                        return;
+                                } catch (Exception e){
+                                    e.printStackTrace();
+                                }
+
                                 String to = socketBaseBean.getTo();
                                 if (!StringUtils.isEmpty(to) && printWriterMap.containsKey(to)) {
                                     PrintWriter pw = printWriterMap.get(to);
@@ -183,7 +230,6 @@ public class SocketChatTest {
                                         pw.println(JSON.toJSONString(socketBaseBean));
                                     }
                                 }
-                                printWriter.println(JSON.toJSONString(socketBaseBean));
                                 break;
                         }
                     }
@@ -207,6 +253,13 @@ public class SocketChatTest {
         baseBean.setContent("客户端请求断开连接");
         baseBean.setType(3);
         baseBean.setMessageId(UUID.randomUUID().toString());
+        return JSON.toJSONString(baseBean);
+    }
+
+    public String ackClient() {
+        SocketBaseBean baseBean = new SocketBaseBean();
+        baseBean.setContent("ACK");
+        baseBean.setType(-1);
         return JSON.toJSONString(baseBean);
     }
 }

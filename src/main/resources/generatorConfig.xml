@@ -125,6 +125,9 @@
         <table tableName="circlecollection" domainObjectName="CircleCollection">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
+        <table tableName="chatrecord" domainObjectName="ChatRecord">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
     </context>
 
 </generatorConfiguration>

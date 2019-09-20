@@ -7,8 +7,10 @@ import java.io.File;
  */
 public class Constant {
 
+//    public static final String HTTP_ROOT = "https://deepkeep.top/";
+//    public static final String UPLOAD_FILE_PATH = "/media/UpLoadPath/"; //华为云图片存储路径
     public static final String HTTP_ROOT = "http://172.17.7.164:9090/";
-    public static final String UPLOAD_FILE_PATH = "D://UpLoadPath/";
+    public static final String UPLOAD_FILE_PATH = "D://UpLoadPath/"; //公司图片存储路径
 
     public static final String PATH = "E:\\workspace_server\\keep\\FaceRunServer\\src\\main\\java\\com\\facerun\\util\\translate" + File.separator + "gettk.js";
 

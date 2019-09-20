@@ -3,7 +3,6 @@ package com.facerun.controller;
 import com.facerun.bean.FileUploadImageBean;
 import com.facerun.config.Constant;
 import com.facerun.util.Code;
-import com.facerun.util.Config;
 import com.facerun.util.FileUtil;
 import com.facerun.util.ReadVideo;
 import org.apache.commons.collections4.MapUtils;
@@ -55,7 +54,8 @@ public class FileController extends AbsController {
         String suffixName = fileName.substring(fileName.lastIndexOf("."));
         logger.info("上传的后缀名为：" + suffixName);
         // 文件上传后的路径
-        String filePath = Config.DEFAULT_UPLOAD_FILE_PATH;
+//        String filePath = Config.DEFAULT_UPLOAD_FILE_PATH;
+        String filePath = Constant.UPLOAD_FILE_PATH;
         File uploadFilePath = new File(filePath);
         if (!uploadFilePath.exists())
             uploadFilePath.mkdirs();
@@ -88,7 +88,8 @@ public class FileController extends AbsController {
             //当前是从该工程的WEB-INF//File//下获取文件(该目录可以在下面一行代码配置)然后下载到C:\\users\\downloads即本机的默认下载的目录
 //            String realPath = request.getServletContext().getRealPath(
 //                    "//WEB-INF//");
-            String filePath = Config.DEFAULT_UPLOAD_FILE_PATH;
+//            String filePath = Config.DEFAULT_UPLOAD_FILE_PATH;
+            String filePath = Constant.UPLOAD_FILE_PATH;
             File file = new File(filePath, fileName);
             FileUtil.downloadFile(file, fileName, response);
         }
@@ -100,7 +101,8 @@ public class FileController extends AbsController {
     public void downloadFile(@RequestParam Map map, HttpServletResponse response) {
         String fileName = MapUtils.getString(map, "filename", "");
         if (fileName != null) {
-            String filePath = Config.DEFAULT_UPLOAD_FILE_PATH;
+//            String filePath = Config.DEFAULT_UPLOAD_FILE_PATH;
+            String filePath = Constant.UPLOAD_FILE_PATH;
             File file = new File(filePath, fileName);
             if (file.exists() && file.length() > 0)
                 FileUtil.downloadFile(file, fileName, response);
@@ -113,7 +115,8 @@ public class FileController extends AbsController {
     public void downloadFile(@PathVariable("fileName") String fileName, @RequestParam Map map, HttpServletResponse response) {
 //        String fileName = MapUtils.getString(map, "filename", "");
         if (fileName != null) {
-            String filePath = Config.DEFAULT_UPLOAD_FILE_PATH;
+//            String filePath = Config.DEFAULT_UPLOAD_FILE_PATH;
+            String filePath = Constant.UPLOAD_FILE_PATH;
             File file = new File(filePath, fileName);
             if (file.exists() && file.length() > 0)
                 FileUtil.downloadFile(file, fileName, response);
@@ -126,7 +129,8 @@ public class FileController extends AbsController {
     public void downloadScaleFile(@RequestParam Map map, HttpServletResponse response) {
         String fileName = MapUtils.getString(map, "filename", "");
         if (fileName != null) {
-            String filePath = Config.DEFAULT_UPLOAD_FILE_PATH;
+//            String filePath = Config.DEFAULT_UPLOAD_FILE_PATH;
+            String filePath = Constant.UPLOAD_FILE_PATH;
             File file = new File(filePath, fileName);
             if (file.exists() && file.length() > 0) {
                 String suffixName = fileName.substring(fileName.lastIndexOf("."));
@@ -170,7 +174,8 @@ public class FileController extends AbsController {
         BufferedOutputStream stream = null;
         List<FileUploadImageBean> fileList = new ArrayList<>();
         // 文件上传后的路径
-        final String filePath = Config.DEFAULT_UPLOAD_FILE_PATH;
+//        final String filePath = Config.DEFAULT_UPLOAD_FILE_PATH;
+        String filePath = Constant.UPLOAD_FILE_PATH;
         StringBuffer resultMsg = new StringBuffer();
         for (int i = 0; i < files.size(); ++i) {
             file = files.get(i);
