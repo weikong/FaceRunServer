@@ -1,4 +1,4 @@
-package com.facerun.util;
+package com.facerun.chat;
 
 import java.io.Serializable;
 
