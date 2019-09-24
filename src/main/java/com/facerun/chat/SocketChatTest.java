@@ -16,6 +16,8 @@ import org.thymeleaf.util.StringUtils;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -221,10 +223,16 @@ public class SocketChatTest {
                                 //向 Client 端反馈、发送信息
 //                                printWriter.println(JSON.toJSONString(ackClient(chatRecord.getMessageid())));
                                 int insert = 0;
+                                String content = "";
                                 try {
                                     chatRecord.setMessagetime(new Date());
                                     chatRecord.setMessagestate(1);
+                                    //存入emoji表情错误，先进行编码，取出的时候进行解码
+                                    content = chatRecord.getMessagecontent();
+                                    content = URLEncoder.encode(content);
+                                    chatRecord.setMessagecontent(content);
                                     insert = chatRecordMapper.insert(chatRecord);
+                                    content = URLDecoder.decode(content);
                                     if (insert == 0)
                                         return;
                                     String to = chatRecord.getMessagetoid();
@@ -238,6 +246,7 @@ public class SocketChatTest {
                                         PrintWriter pw = printWriterMap.get(to);
                                         if (pw != null && pw != printWriter) {
                                             chatRecord.setMessagestate(1);
+                                            chatRecord.setMessagecontent(content);
                                             pw.println(JSON.toJSONString(chatRecord));
                                         }
                                     }
@@ -249,6 +258,7 @@ public class SocketChatTest {
                                         chatRecord.setMessagestate(9);
                                         chatRecordMapper.updateByPrimaryKey(chatRecord);
                                     }
+                                    chatRecord.setMessagecontent(content);
                                     printWriter.println(JSON.toJSONString(chatRecord));
                                 }
                                 break;
@@ -321,6 +331,9 @@ public class SocketChatTest {
         List<ChatRecord> chatRecordList = custChatRecordAckMapper.queryChatRecordAck(params);
         if (chatRecordList == null || chatRecordList.size() == 0)
             return "";
+        for (ChatRecord chatRecord : chatRecordList){
+            chatRecord.setMessagecontent(URLDecoder.decode(chatRecord.getMessagecontent()));
+        }
         ChatRecord chatRecord = new ChatRecord();
         chatRecord.setMessagecontent("离线数据");
         chatRecord.setMessagetype(6);
