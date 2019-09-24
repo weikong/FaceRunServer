@@ -50,36 +50,41 @@ public class SocketChatTest {
 //    }
 
     public void SocketChatTest() {
-        try {
-            //步骤一
-            server = new ServerSocket(PORT);
-            mExecutorService = Executors.newCachedThreadPool();
-            System.out.println("服务器已启动...");
-            Socket client = null;
-            while (true) {
-                //步骤二，每接受到一个新Socket连接请求，就会新建一个Thread去处理与其之间的通信
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
                 try {
-                    client = server.accept();
-                    client.setSoTimeout(15*1000);
-                    String getHostAddress = client.getInetAddress().getHostAddress();
-                    if (serviceMap.containsKey(getHostAddress)) {
-                        Service service = serviceMap.get(getHostAddress);
-                        service.setSocket(client);
-                    } else {
-                        Service service = new Service(client);
-                        serviceMap.put(getHostAddress, service);
-                        mExecutorService.execute(service);
+                    //步骤一
+                    server = new ServerSocket(PORT);
+                    mExecutorService = Executors.newCachedThreadPool();
+                    System.out.println("服务器已启动...");
+                    Socket client = null;
+                    while (true) {
+                        //步骤二，每接受到一个新Socket连接请求，就会新建一个Thread去处理与其之间的通信
+                        try {
+                            client = server.accept();
+                            client.setSoTimeout(15*1000);
+                            String getHostAddress = client.getInetAddress().getHostAddress();
+                            if (serviceMap.containsKey(getHostAddress)) {
+                                Service service = serviceMap.get(getHostAddress);
+                                service.setSocket(client);
+                            } else {
+                                Service service = new Service(client);
+                                serviceMap.put(getHostAddress, service);
+                                mExecutorService.execute(service);
+                            }
+                        } catch (Exception e){
+                            e.printStackTrace();
+                            System.out.println("服务停止");
+                        }
                     }
-                } catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
-                    System.out.println("服务停止");
+                    System.out.println("服务停止1");
                 }
+                System.out.println("服务停止2");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("服务停止1");
-        }
-        System.out.println("服务停止2");
+        }).start();
     }
 
     class Service implements Runnable {
@@ -295,7 +300,35 @@ public class SocketChatTest {
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("服务停止4");
+                String getHostAddress = socket.getInetAddress().getHostAddress();
+                if (!StringUtils.isEmpty(getHostAddress) && serviceMap.containsKey(getHostAddress)){
+                    serviceMap.remove(getHostAddress);
+                }
+                Iterator<Map.Entry<String, String>> entries = IPAddressIDMap.entrySet().iterator();
+                String IpAddressKey = "";
+                while(entries.hasNext()){
+                    Map.Entry<String, String> entry = entries.next();
+                    String key = entry.getKey();
+                    String value = entry.getValue();
+                    if (getHostAddress.equals(value)){
+                        IpAddressKey = key;
+                        break;
+                    }
+                }
+                if (!StringUtils.isEmpty(IpAddressKey)){
+                    IPAddressIDMap.remove(IpAddressKey);
+                    printWriterMap.remove(IpAddressKey);
+                }
                 stopService();
+                try {
+                    in.close();
+                    in = null;
+                    //接受 Client 端的断开连接请求，并关闭 Socket 连接
+                    socket.close();
+                    socket = null;
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
             }
         }
     }

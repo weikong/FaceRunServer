@@ -14,20 +14,21 @@ import org.springframework.cache.annotation.EnableCaching;
 @SpringBootApplication
 @EnableCaching
 @EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
-//public class KeepApplication extends SpringBootServletInitializer implements EmbeddedServletContainerCustomizer {
-public class KeepApplication extends SpringBootServletInitializer {
+public class KeepApplication extends SpringBootServletInitializer implements EmbeddedServletContainerCustomizer {
+//public class KeepApplication extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
 //		SpringApplication.run(KeepApplication.class, args);
 		SpringApplication application = new SpringApplication(KeepApplication.class);
 		application.setBannerMode(Banner.Mode.OFF);
 		application.run(args);
+//		SocketChatTest socketChatTest = new SocketChatTest();
 	}
 
-//	@Override
-//	public void customize(ConfigurableEmbeddedServletContainer configurableEmbeddedServletContainer) {
-//		configurableEmbeddedServletContainer.setPort(8080);
-//	}
+	@Override
+	public void customize(ConfigurableEmbeddedServletContainer configurableEmbeddedServletContainer) {
+		configurableEmbeddedServletContainer.setPort(9090);
+	}
 
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
