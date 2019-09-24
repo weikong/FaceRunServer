@@ -37,7 +37,6 @@ public class SocketChatTest {
     private static final int PORT = 9999;
     private Map<String, PrintWriter> printWriterMap = new HashMap<>();
     private Map<String, Service> serviceMap = new HashMap<>();
-
     private Map<String, String> IPAddressIDMap = new HashMap<>();
 
     private ServerSocket server = null;
@@ -57,20 +56,28 @@ public class SocketChatTest {
             Socket client = null;
             while (true) {
                 //步骤二，每接受到一个新Socket连接请求，就会新建一个Thread去处理与其之间的通信
-                client = server.accept();
-                String getHostAddress = client.getInetAddress().getHostAddress();
-                if (serviceMap.containsKey(getHostAddress)) {
-                    Service service = serviceMap.get(getHostAddress);
-                    service.setSocket(client);
-                } else {
-                    Service service = new Service(client);
-                    serviceMap.put(getHostAddress, service);
-                    mExecutorService.execute(service);
+                try {
+                    client = server.accept();
+                    client.setSoTimeout(15*1000);
+                    String getHostAddress = client.getInetAddress().getHostAddress();
+                    if (serviceMap.containsKey(getHostAddress)) {
+                        Service service = serviceMap.get(getHostAddress);
+                        service.setSocket(client);
+                    } else {
+                        Service service = new Service(client);
+                        serviceMap.put(getHostAddress, service);
+                        mExecutorService.execute(service);
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                    System.out.println("服务停止");
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println("服务停止1");
         }
+        System.out.println("服务停止2");
     }
 
     class Service implements Runnable {
@@ -123,7 +130,9 @@ public class SocketChatTest {
         public synchronized void run() {
             try {
                 while (!setStop) {
+                    System.out.println("setStop:" + setStop+"  isConnected = "+socket.isConnected());
                     //循环接收、读取 Client 端发送过来的信息
+//                    if (in != null && (receiveMsg = in.readLine()) != null) {
                     if (in != null && (receiveMsg = in.readLine()) != null) {
                         if (StringUtils.isEmpty(receiveMsg) || receiveMsg == null) {
                             System.out.println("receiveMsg:" + receiveMsg +"  getPort = "+socket.getPort());
@@ -244,10 +253,39 @@ public class SocketChatTest {
                                 }
                                 break;
                         }
+                    } else {
+                        String getHostAddress = socket.getInetAddress().getHostAddress();
+                        if (!StringUtils.isEmpty(getHostAddress) && serviceMap.containsKey(getHostAddress)){
+                            serviceMap.remove(getHostAddress);
+                        }
+                        Iterator<Map.Entry<String, String>> entries = IPAddressIDMap.entrySet().iterator();
+                        String IpAddressKey = "";
+                        while(entries.hasNext()){
+                            Map.Entry<String, String> entry = entries.next();
+                            String key = entry.getKey();
+                            String value = entry.getValue();
+                            if (getHostAddress.equals(value)){
+                                IpAddressKey = key;
+                                break;
+                            }
+                        }
+                        if (!StringUtils.isEmpty(IpAddressKey)){
+                            IPAddressIDMap.remove(IpAddressKey);
+                            printWriterMap.remove(IpAddressKey);
+                        }
+                        stopService();
+                        in.close();
+                        in = null;
+                        //接受 Client 端的断开连接请求，并关闭 Socket 连接
+                        socket.close();
+                        socket = null;
                     }
                 }
+                System.out.println("服务停止3");
             } catch (Exception e) {
                 e.printStackTrace();
+                System.out.println("服务停止4");
+                stopService();
             }
         }
     }
