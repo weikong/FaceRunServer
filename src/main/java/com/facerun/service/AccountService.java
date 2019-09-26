@@ -2,10 +2,7 @@ package com.facerun.service;
 
 import com.facerun.bean.Account;
 import com.facerun.bean.AccountExample;
-import com.facerun.bean.Run;
-import com.facerun.bean.RunExample;
 import com.facerun.dao.AccountMapper;
-import com.facerun.dao.RunMapper;
 import com.facerun.exception.BizException;
 import com.facerun.util.Code;
 import org.apache.commons.collections4.MapUtils;
@@ -129,6 +126,8 @@ public class AccountService {
     }
 
     public Account accountSelect(String account) {
+        if (StringUtils.isEmpty(account))
+            return null;
         AccountExample example = new AccountExample();
         example.createCriteria().andAccountEqualTo(account);
         List<Account> list = accountMapper.selectByExample(example);

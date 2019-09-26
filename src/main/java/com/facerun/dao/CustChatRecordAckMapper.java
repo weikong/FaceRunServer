@@ -1,6 +1,6 @@
 package com.facerun.dao;
 
-import com.facerun.bean.ChatRecord;
+import com.facerun.bean.ChatRecordAvatar;
 
 import java.util.List;
 import java.util.Map;
@@ -10,6 +10,6 @@ import java.util.Map;
  */
 public interface CustChatRecordAckMapper {
 
-    List<ChatRecord> queryChatRecordAck(Map params);
+    List<ChatRecordAvatar> queryChatRecordAck(Map params);
 
 }

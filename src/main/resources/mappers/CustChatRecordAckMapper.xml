@@ -2,11 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.facerun.dao.CustChatRecordAckMapper">
 
-    <select id="queryChatRecordAck" parameterType="java.util.Map" resultType="com.facerun.bean.ChatRecord">
+    <select id="queryChatRecordAck" parameterType="java.util.Map" resultType="com.facerun.bean.ChatRecordAvatar">
         SELECT
-        cr.*
+        cr.*,a1.head_portrait as messagefromavatar,a2.head_portrait as messagetoavatar
         FROM chatrecord cr
         INNER JOIN chatack ca on ca.messageid = cr.messageid
+        INNER JOIN account a1 on a1.account = cr.messagefromid
+        INNER JOIN account a2 on a2.account = cr.messagetoid
         WHERE ca.messagetoid=#{toid} AND ca.messageack=0
     </select>
 </mapper>

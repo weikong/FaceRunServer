@@ -2,12 +2,11 @@ package com.facerun.chat;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.facerun.bean.ChatAck;
-import com.facerun.bean.ChatAckExample;
-import com.facerun.bean.ChatRecord;
+import com.facerun.bean.*;
 import com.facerun.dao.ChatAckMapper;
 import com.facerun.dao.ChatRecordMapper;
 import com.facerun.dao.CustChatRecordAckMapper;
+import com.facerun.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +34,8 @@ public class SocketChatTest {
     private ChatAckMapper chatAckMapper;
     @Autowired
     private CustChatRecordAckMapper custChatRecordAckMapper;
+    @Autowired
+    private AccountService accountService;
 
     private static final int PORT = 9999;
     private Map<String, PrintWriter> printWriterMap = new HashMap<>();
@@ -63,7 +64,7 @@ public class SocketChatTest {
                         //步骤二，每接受到一个新Socket连接请求，就会新建一个Thread去处理与其之间的通信
                         try {
                             client = server.accept();
-                            client.setSoTimeout(15*1000);
+                            client.setSoTimeout(35 * 1000);
                             String getHostAddress = client.getInetAddress().getHostAddress();
                             if (serviceMap.containsKey(getHostAddress)) {
                                 Service service = serviceMap.get(getHostAddress);
@@ -73,7 +74,7 @@ public class SocketChatTest {
                                 serviceMap.put(getHostAddress, service);
                                 mExecutorService.execute(service);
                             }
-                        } catch (Exception e){
+                        } catch (Exception e) {
                             e.printStackTrace();
                             System.out.println("服务停止");
                         }
@@ -129,7 +130,7 @@ public class SocketChatTest {
             return serviceId;
         }
 
-        public void stopService(){
+        public void stopService() {
             setStop = true;
         }
 
@@ -137,15 +138,15 @@ public class SocketChatTest {
         public synchronized void run() {
             try {
                 while (!setStop) {
-                    System.out.println("setStop:" + setStop+"  isConnected = "+socket.isConnected());
+                    System.out.println("setStop:" + setStop + "  isConnected = " + socket.isConnected());
                     //循环接收、读取 Client 端发送过来的信息
 //                    if (in != null && (receiveMsg = in.readLine()) != null) {
                     if (in != null && (receiveMsg = in.readLine()) != null) {
                         if (StringUtils.isEmpty(receiveMsg) || receiveMsg == null) {
-                            System.out.println("receiveMsg:" + receiveMsg +"  getPort = "+socket.getPort());
+                            System.out.println("receiveMsg:" + receiveMsg + "  getPort = " + socket.getPort());
                             return;
                         }
-                        ChatRecord chatRecord = JSONObject.parseObject(receiveMsg, ChatRecord.class);
+                        ChatRecordAvatar chatRecord = JSONObject.parseObject(receiveMsg, ChatRecordAvatar.class);
                         System.out.println("receiveMsg:2 " + JSON.toJSONString(chatRecord));
                         /**
                          * type 9：聊天内容； 1：Ping； 2：Connect；3：Disconnect； 4：Login
@@ -167,7 +168,7 @@ public class SocketChatTest {
                                 if (printWriterMap.containsKey(uid)) {
                                     printWriterMap.remove(uid);
                                 }
-                                if (serviceMap.containsKey(hd)){
+                                if (serviceMap.containsKey(hd)) {
                                     serviceMap.get(hd).stopService();
                                     serviceMap.remove(hd);
                                 }
@@ -183,21 +184,21 @@ public class SocketChatTest {
                                 String userId = chatRecord.getMessagefromid();
 
                                 //更新Service
-                                if (IPAddressIDMap.containsKey(userId)){
+                                if (IPAddressIDMap.containsKey(userId)) {
                                     String ip = IPAddressIDMap.get(userId);
-                                    if (serviceMap.containsKey(ip)){
+                                    if (serviceMap.containsKey(ip)) {
                                         Service service = serviceMap.get(ip);
                                         System.out.println("service.serviceId: " + service.getServiceId());
-                                        if (!service.getServiceId().equals(serviceId)){
+                                        if (!service.getServiceId().equals(serviceId)) {
                                             service.stopService();
                                             serviceMap.remove(ip);
                                         }
                                     }
                                 }
-                                IPAddressIDMap.put(userId,getHostAddress);
+                                IPAddressIDMap.put(userId, getHostAddress);
 
                                 //清除之前的PrintWriter
-                                if (printWriterMap.containsKey(userId)){
+                                if (printWriterMap.containsKey(userId)) {
                                     printWriterMap.get(userId).println(disconnect());
                                     System.out.println(disconnect());
                                 }
@@ -214,13 +215,13 @@ public class SocketChatTest {
                                     ChatAckExample example = new ChatAckExample();
                                     example.createCriteria().andMessageidEqualTo(chatRecord.getMessageid()).andMessagetoidEqualTo(chatRecord.getMessagefromid());
                                     List<ChatAck> list = chatAckMapper.selectByExample(example);
-                                    if (list != null && list.size() == 1){
+                                    if (list != null && list.size() == 1) {
                                         ChatAck chatAck = list.get(0);
                                         chatAck.setMessageack(1);
                                         chatAckMapper.updateByPrimaryKey(chatAck);
                                     }
                                     System.out.println(receiveMsg);
-                                } catch (Exception e){
+                                } catch (Exception e) {
                                     e.printStackTrace();
                                 }
                                 break;
@@ -229,23 +230,37 @@ public class SocketChatTest {
 //                                printWriter.println(JSON.toJSONString(ackClient(chatRecord.getMessageid())));
                                 int insert = 0;
                                 String content = "";
+                                Account accountFrom = accountService.accountSelect(chatRecord.getMessagefromid());
+                                Account accountTo = accountService.accountSelect(chatRecord.getMessagetoid());
                                 try {
                                     chatRecord.setMessagetime(new Date());
                                     chatRecord.setMessagestate(1);
+                                    if (accountFrom != null) {
+                                        chatRecord.setMessagefromavatar(accountFrom.getHeadPortrait());
+                                    }
+                                    if (accountTo != null) {
+                                        chatRecord.setMessagetoavatar(accountTo.getHeadPortrait());
+                                    }
                                     //存入emoji表情错误，先进行编码，取出的时候进行解码
                                     content = chatRecord.getMessagecontent();
                                     content = URLEncoder.encode(content);
                                     chatRecord.setMessagecontent(content);
+                                    
                                     insert = chatRecordMapper.insert(chatRecord);
                                     content = URLDecoder.decode(content);
                                     if (insert == 0)
                                         return;
+                                    String from = chatRecord.getMessagefromid();
                                     String to = chatRecord.getMessagetoid();
                                     ChatAck chatAck = new ChatAck();
                                     chatAck.setMessageid(chatRecord.getMessageid());
                                     chatAck.setMessagetoid(to);
                                     chatAck.setMessagetime(chatRecord.getMessagetime());
-                                    chatAck.setMessageack(0);
+                                    if (!StringUtils.isEmpty(from) && !StringUtils.isEmpty(to) && from.equals(to)){
+                                        chatAck.setMessageack(1);
+                                    } else {
+                                        chatAck.setMessageack(0);
+                                    }
                                     int insertAck = chatAckMapper.insert(chatAck);
                                     if (!StringUtils.isEmpty(to) && printWriterMap.containsKey(to)) {
                                         PrintWriter pw = printWriterMap.get(to);
@@ -255,11 +270,11 @@ public class SocketChatTest {
                                             pw.println(JSON.toJSONString(chatRecord));
                                         }
                                     }
-                                } catch (Exception e){
+                                } catch (Exception e) {
                                     e.printStackTrace();
                                 } finally {
                                     chatRecord.setMessagetype(5);
-                                    if (insert == 0){
+                                    if (insert == 0) {
                                         chatRecord.setMessagestate(9);
                                         chatRecordMapper.updateByPrimaryKey(chatRecord);
                                     }
@@ -270,21 +285,21 @@ public class SocketChatTest {
                         }
                     } else {
                         String getHostAddress = socket.getInetAddress().getHostAddress();
-                        if (!StringUtils.isEmpty(getHostAddress) && serviceMap.containsKey(getHostAddress)){
+                        if (!StringUtils.isEmpty(getHostAddress) && serviceMap.containsKey(getHostAddress)) {
                             serviceMap.remove(getHostAddress);
                         }
                         Iterator<Map.Entry<String, String>> entries = IPAddressIDMap.entrySet().iterator();
                         String IpAddressKey = "";
-                        while(entries.hasNext()){
+                        while (entries.hasNext()) {
                             Map.Entry<String, String> entry = entries.next();
                             String key = entry.getKey();
                             String value = entry.getValue();
-                            if (getHostAddress.equals(value)){
+                            if (getHostAddress.equals(value)) {
                                 IpAddressKey = key;
                                 break;
                             }
                         }
-                        if (!StringUtils.isEmpty(IpAddressKey)){
+                        if (!StringUtils.isEmpty(IpAddressKey)) {
                             IPAddressIDMap.remove(IpAddressKey);
                             printWriterMap.remove(IpAddressKey);
                         }
@@ -301,21 +316,21 @@ public class SocketChatTest {
                 e.printStackTrace();
                 System.out.println("服务停止4");
                 String getHostAddress = socket.getInetAddress().getHostAddress();
-                if (!StringUtils.isEmpty(getHostAddress) && serviceMap.containsKey(getHostAddress)){
+                if (!StringUtils.isEmpty(getHostAddress) && serviceMap.containsKey(getHostAddress)) {
                     serviceMap.remove(getHostAddress);
                 }
                 Iterator<Map.Entry<String, String>> entries = IPAddressIDMap.entrySet().iterator();
                 String IpAddressKey = "";
-                while(entries.hasNext()){
+                while (entries.hasNext()) {
                     Map.Entry<String, String> entry = entries.next();
                     String key = entry.getKey();
                     String value = entry.getValue();
-                    if (getHostAddress.equals(value)){
+                    if (getHostAddress.equals(value)) {
                         IpAddressKey = key;
                         break;
                     }
                 }
-                if (!StringUtils.isEmpty(IpAddressKey)){
+                if (!StringUtils.isEmpty(IpAddressKey)) {
                     IPAddressIDMap.remove(IpAddressKey);
                     printWriterMap.remove(IpAddressKey);
                 }
@@ -357,14 +372,14 @@ public class SocketChatTest {
         return JSON.toJSONString(chatRecord);
     }
 
-    public String buildOfflineData(String toId){
+    public String buildOfflineData(String toId) {
         List<ChatRecord> list = new ArrayList<>();
         Map params = new HashMap();
-        params.put("toid",toId);
-        List<ChatRecord> chatRecordList = custChatRecordAckMapper.queryChatRecordAck(params);
+        params.put("toid", toId);
+        List<ChatRecordAvatar> chatRecordList = custChatRecordAckMapper.queryChatRecordAck(params);
         if (chatRecordList == null || chatRecordList.size() == 0)
             return "";
-        for (ChatRecord chatRecord : chatRecordList){
+        for (ChatRecordAvatar chatRecord : chatRecordList) {
             chatRecord.setMessagecontent(URLDecoder.decode(chatRecord.getMessagecontent()));
         }
         ChatRecord chatRecord = new ChatRecord();
