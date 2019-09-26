@@ -4,7 +4,7 @@
 
     <select id="getUsers" resultType="com.facerun.bean.Record">
         SELECT
-        a.*
+        a.id,a.account,a.name,a.phone,a.status,a.type,a.create_at AS createAt,a.head_portrait AS headPortrait
         FROM account a
     </select>
 </mapper>

@@ -215,10 +215,11 @@ public class SocketChatTest {
                                     ChatAckExample example = new ChatAckExample();
                                     example.createCriteria().andMessageidEqualTo(chatRecord.getMessageid()).andMessagetoidEqualTo(chatRecord.getMessagefromid());
                                     List<ChatAck> list = chatAckMapper.selectByExample(example);
-                                    if (list != null && list.size() == 1) {
-                                        ChatAck chatAck = list.get(0);
-                                        chatAck.setMessageack(1);
-                                        chatAckMapper.updateByPrimaryKey(chatAck);
+                                    if (list != null && list.size() > 0) {
+                                        for (ChatAck chatAck : list){
+                                            chatAck.setMessageack(1);
+                                            chatAckMapper.updateByPrimaryKey(chatAck);
+                                        }
                                     }
                                     System.out.println(receiveMsg);
                                 } catch (Exception e) {
@@ -245,23 +246,35 @@ public class SocketChatTest {
                                     content = chatRecord.getMessagecontent();
                                     content = URLEncoder.encode(content);
                                     chatRecord.setMessagecontent(content);
-                                    
-                                    insert = chatRecordMapper.insert(chatRecord);
+                                    ChatRecordExample example = new ChatRecordExample();
+                                    example.createCriteria().andMessageidEqualTo(chatRecord.getMessageid());
+                                    List<ChatRecord> list = chatRecordMapper.selectByExample(example);
+                                    if (list != null && list.size() > 0){
+                                        insert = chatRecordMapper.updateByPrimaryKeySelective(list.get(0));
+                                    } else {
+                                        insert = chatRecordMapper.insert(chatRecord);
+                                    }
                                     content = URLDecoder.decode(content);
                                     if (insert == 0)
                                         return;
                                     String from = chatRecord.getMessagefromid();
                                     String to = chatRecord.getMessagetoid();
-                                    ChatAck chatAck = new ChatAck();
-                                    chatAck.setMessageid(chatRecord.getMessageid());
-                                    chatAck.setMessagetoid(to);
-                                    chatAck.setMessagetime(chatRecord.getMessagetime());
-                                    if (!StringUtils.isEmpty(from) && !StringUtils.isEmpty(to) && from.equals(to)){
-                                        chatAck.setMessageack(1);
-                                    } else {
-                                        chatAck.setMessageack(0);
+
+                                    ChatAckExample exampleAck = new ChatAckExample();
+                                    exampleAck.createCriteria().andMessageidEqualTo(chatRecord.getMessageid()).andMessagetoidEqualTo(to);
+                                    List<ChatAck> listAck = chatAckMapper.selectByExample(exampleAck);
+                                    if (listAck == null || listAck.size() == 0){
+                                        ChatAck chatAck = new ChatAck();
+                                        chatAck.setMessageid(chatRecord.getMessageid());
+                                        chatAck.setMessagetoid(to);
+                                        chatAck.setMessagetime(chatRecord.getMessagetime());
+                                        if (!StringUtils.isEmpty(from) && !StringUtils.isEmpty(to) && from.equals(to)){
+                                            chatAck.setMessageack(1);
+                                        } else {
+                                            chatAck.setMessageack(0);
+                                        }
+                                        int insertAck = chatAckMapper.insert(chatAck);
                                     }
-                                    int insertAck = chatAckMapper.insert(chatAck);
                                     if (!StringUtils.isEmpty(to) && printWriterMap.containsKey(to)) {
                                         PrintWriter pw = printWriterMap.get(to);
                                         if (pw != null && pw != printWriter) {
