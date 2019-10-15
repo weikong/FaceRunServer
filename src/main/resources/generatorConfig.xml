@@ -131,6 +131,9 @@
         <table tableName="chatack" domainObjectName="ChatAck">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
+        <table tableName="groupinfo" domainObjectName="GroupInfo">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
     </context>
 
 </generatorConfiguration>

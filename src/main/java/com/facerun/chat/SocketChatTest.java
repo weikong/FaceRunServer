@@ -3,10 +3,10 @@ package com.facerun.chat;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.facerun.bean.*;
-import com.facerun.dao.ChatAckMapper;
-import com.facerun.dao.ChatRecordMapper;
-import com.facerun.dao.CustChatRecordAckMapper;
+import com.facerun.dao.*;
+import com.facerun.exception.BizException;
 import com.facerun.service.AccountService;
+import com.facerun.util.Code;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +36,11 @@ public class SocketChatTest {
     private CustChatRecordAckMapper custChatRecordAckMapper;
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private GroupInfoMapper groupInfoMapper;
+    @Autowired
+    private CustGroupInfoMapper custGroupInfoMapper;
 
     private static final int PORT = 9999;
     private Map<String, PrintWriter> printWriterMap = new HashMap<>();
@@ -213,7 +218,7 @@ public class SocketChatTest {
                                 try {
                                     //更新ChatAck
                                     ChatAckExample example = new ChatAckExample();
-                                    example.createCriteria().andMessageidEqualTo(chatRecord.getMessageid()).andMessagetoidEqualTo(chatRecord.getMessagefromid());
+                                    example.createCriteria().andMessageidEqualTo(chatRecord.getMessageid()).andMessagetoidEqualTo(chatRecord.getSourcesenderid());
                                     List<ChatAck> list = chatAckMapper.selectByExample(example);
                                     if (list != null && list.size() > 0) {
                                         for (ChatAck chatAck : list){
@@ -230,69 +235,148 @@ public class SocketChatTest {
                                 //向 Client 端反馈、发送信息
 //                                printWriter.println(JSON.toJSONString(ackClient(chatRecord.getMessageid())));
                                 int insert = 0;
-                                String content = "";
-                                Account accountFrom = accountService.accountSelect(chatRecord.getMessagefromid());
-                                Account accountTo = accountService.accountSelect(chatRecord.getMessagetoid());
-                                try {
-                                    chatRecord.setMessagetime(new Date());
-                                    chatRecord.setMessagestate(1);
-                                    if (accountFrom != null) {
-                                        chatRecord.setMessagefromavatar(accountFrom.getHeadPortrait());
-                                    }
-                                    if (accountTo != null) {
-                                        chatRecord.setMessagetoavatar(accountTo.getHeadPortrait());
-                                    }
-                                    //存入emoji表情错误，先进行编码，取出的时候进行解码
-                                    content = chatRecord.getMessagecontent();
-                                    content = URLEncoder.encode(content);
-                                    chatRecord.setMessagecontent(content);
-                                    ChatRecordExample example = new ChatRecordExample();
-                                    example.createCriteria().andMessageidEqualTo(chatRecord.getMessageid());
-                                    List<ChatRecord> list = chatRecordMapper.selectByExample(example);
-                                    if (list != null && list.size() > 0){
-                                        insert = chatRecordMapper.updateByPrimaryKeySelective(list.get(0));
-                                    } else {
-                                        insert = chatRecordMapper.insert(chatRecord);
-                                    }
-                                    content = URLDecoder.decode(content);
-                                    if (insert == 0)
-                                        return;
-                                    String from = chatRecord.getMessagefromid();
-                                    String to = chatRecord.getMessagetoid();
-
-                                    ChatAckExample exampleAck = new ChatAckExample();
-                                    exampleAck.createCriteria().andMessageidEqualTo(chatRecord.getMessageid()).andMessagetoidEqualTo(to);
-                                    List<ChatAck> listAck = chatAckMapper.selectByExample(exampleAck);
-                                    if (listAck == null || listAck.size() == 0){
-                                        ChatAck chatAck = new ChatAck();
-                                        chatAck.setMessageid(chatRecord.getMessageid());
-                                        chatAck.setMessagetoid(to);
-                                        chatAck.setMessagetime(chatRecord.getMessagetime());
-                                        if (!StringUtils.isEmpty(from) && !StringUtils.isEmpty(to) && from.equals(to)){
-                                            chatAck.setMessageack(1);
+//                                String content = "";
+                                boolean isGroup = chatRecord.getGroupdata() == 1 ? true: false;
+                                if (!isGroup){
+                                    Account accountFrom = accountService.accountSelect(chatRecord.getSourcesenderid());
+                                    Account accountTo = accountService.accountSelect(chatRecord.getMessagetoid());
+                                    try {
+                                        chatRecord.setMessagetime(new Date());
+                                        chatRecord.setMessagestate(1);
+                                        if (accountFrom != null) {
+                                            chatRecord.setMessagefromavatar(accountFrom.getHeadPortrait());
+                                        }
+                                        if (accountTo != null) {
+                                            chatRecord.setMessagetoavatar(accountTo.getHeadPortrait());
+                                        }
+                                        //存入emoji表情错误，先进行编码，取出的时候进行解码
+                                        String content = chatRecord.getMessagecontent();
+                                        content = URLEncoder.encode(content);
+                                        chatRecord.setMessagecontent(content);
+                                        ChatRecordExample example = new ChatRecordExample();
+                                        example.createCriteria().andMessageidEqualTo(chatRecord.getMessageid());
+                                        List<ChatRecord> list = chatRecordMapper.selectByExample(example);
+                                        if (list != null && list.size() > 0){
+                                            insert = chatRecordMapper.updateByPrimaryKeySelective(list.get(0));
                                         } else {
-                                            chatAck.setMessageack(0);
+                                            insert = chatRecordMapper.insert(chatRecord);
                                         }
-                                        int insertAck = chatAckMapper.insert(chatAck);
-                                    }
-                                    if (!StringUtils.isEmpty(to) && printWriterMap.containsKey(to)) {
-                                        PrintWriter pw = printWriterMap.get(to);
-                                        if (pw != null && pw != printWriter) {
-                                            chatRecord.setMessagestate(1);
-                                            chatRecord.setMessagecontent(content);
-                                            pw.println(JSON.toJSONString(chatRecord));
+                                        content = URLDecoder.decode(content);
+                                        chatRecord.setMessagecontent(content);
+                                        if (insert == 0)
+                                            return;
+                                        String from = chatRecord.getSourcesenderid();
+                                        String to = chatRecord.getMessagetoid();
+
+                                        ChatAckExample exampleAck = new ChatAckExample();
+                                        exampleAck.createCriteria().andMessageidEqualTo(chatRecord.getMessageid()).andMessagetoidEqualTo(to);
+                                        List<ChatAck> listAck = chatAckMapper.selectByExample(exampleAck);
+                                        if (listAck == null || listAck.size() == 0){
+                                            ChatAck chatAck = new ChatAck();
+                                            chatAck.setMessageid(chatRecord.getMessageid());
+                                            chatAck.setMessagetoid(to);
+                                            chatAck.setMessagetime(chatRecord.getMessagetime());
+                                            if (!StringUtils.isEmpty(from) && !StringUtils.isEmpty(to) && from.equals(to)){
+                                                chatAck.setMessageack(1);
+                                            } else {
+                                                chatAck.setMessageack(0);
+                                            }
+                                            int insertAck = chatAckMapper.insert(chatAck);
                                         }
+                                        if (!StringUtils.isEmpty(to) && printWriterMap.containsKey(to)) {
+                                            PrintWriter pw = printWriterMap.get(to);
+                                            if (pw != null && pw != printWriter) {
+                                                chatRecord.setMessagestate(1);
+                                                pw.println(JSON.toJSONString(chatRecord));
+                                            }
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    } finally {
+                                        chatRecord.setMessagetype(5);
+                                        if (insert == 0) {
+                                            chatRecord.setMessagestate(9);
+                                            chatRecordMapper.updateByPrimaryKey(chatRecord);
+                                        }
+                                        printWriter.println(JSON.toJSONString(chatRecord));
                                     }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                } finally {
-                                    chatRecord.setMessagetype(5);
-                                    if (insert == 0) {
-                                        chatRecord.setMessagestate(9);
-                                        chatRecordMapper.updateByPrimaryKey(chatRecord);
+                                } else {
+//                                    Account accountFrom = accountService.accountSelect(chatRecord.getSourcesenderid());
+//                                    chatRecord.setMessagetime(new Date());
+//                                    chatRecord.setMessagestate(1);
+//                                    if (accountFrom != null) {
+//                                        chatRecord.setMessagefromavatar(accountFrom.getHeadPortrait());
+//                                    }
+                                    chatRecord.setGroupdata(1);
+                                    chatRecord.setMessagefromavatar("");
+                                    if (StringUtils.isEmpty(chatRecord.getMessagefromid()))
+                                        throw new BizException(Code.DATA_ERROR);
+                                    GroupInfoExample exampleG = new GroupInfoExample();
+                                    exampleG.createCriteria().andGroupaccountEqualTo(chatRecord.getMessagefromid());
+                                    List<GroupInfo> groupInfoList = groupInfoMapper.selectByExample(exampleG);
+                                    if (groupInfoList.size() > 0) {
+                                        GroupInfo groupInfo = groupInfoList.get(0);
+                                        Map memberParams = new HashMap();
+                                        memberParams.put("members", groupInfo.getGroupmembers().split(","));
+                                        List<Account> members = custGroupInfoMapper.queryGroupMembersAccount(memberParams);
+                                        for (Account account : members){
+                                            try {
+                                                chatRecord.setMessagetoid(account.getAccount());
+                                                chatRecord.setMessagetoname(account.getName());
+                                                chatRecord.setMessagetoavatar(account.getHeadPortrait());
+                                                //存入emoji表情错误，先进行编码，取出的时候进行解码
+                                                String content = chatRecord.getMessagecontent();
+                                                content = URLEncoder.encode(content);
+                                                chatRecord.setMessagecontent(content);
+                                                ChatRecordExample example = new ChatRecordExample();
+                                                example.createCriteria().andMessageidEqualTo(chatRecord.getMessageid()).andMessagetoidEqualTo(account.getAccount());
+                                                List<ChatRecord> list = chatRecordMapper.selectByExample(example);
+                                                if (list != null && list.size() > 0){
+                                                    insert = chatRecordMapper.updateByPrimaryKeySelective(list.get(0));
+                                                } else {
+                                                    insert = chatRecordMapper.insert(chatRecord);
+                                                }
+                                                content = URLDecoder.decode(content);
+                                                chatRecord.setMessagecontent(content);
+                                                if (insert == 0)
+                                                    return;
+                                                String from = chatRecord.getSourcesenderid();
+                                                String to = account.getAccount();
+                                                ChatAckExample exampleAck = new ChatAckExample();
+                                                exampleAck.createCriteria().andMessageidEqualTo(chatRecord.getMessageid()).andMessagetoidEqualTo(to);
+                                                List<ChatAck> listAck = chatAckMapper.selectByExample(exampleAck);
+                                                if (listAck == null || listAck.size() == 0){
+                                                    ChatAck chatAck = new ChatAck();
+                                                    chatAck.setMessageid(chatRecord.getMessageid());
+                                                    chatAck.setMessagetoid(to);
+                                                    chatAck.setMessagetime(chatRecord.getMessagetime());
+                                                    if (!StringUtils.isEmpty(from) && !StringUtils.isEmpty(to) && from.equals(to)){
+                                                        chatAck.setMessageack(1);
+                                                    } else {
+                                                        chatAck.setMessageack(0);
+                                                    }
+                                                    int insertAck = chatAckMapper.insert(chatAck);
+                                                }
+                                                if (!StringUtils.isEmpty(to) && printWriterMap.containsKey(to)) {
+                                                    PrintWriter pw = printWriterMap.get(to);
+                                                    if (pw != null && pw != printWriter) {
+                                                        chatRecord.setMessagestate(1);
+                                                        pw.println(JSON.toJSONString(chatRecord));
+                                                    }
+                                                }
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            } finally {
+
+                                            }
+                                        }
+                                        chatRecord.setMessagetype(5);
+                                        if (insert == 0) {
+                                            chatRecord.setMessagestate(9);
+                                            chatRecordMapper.updateByPrimaryKey(chatRecord);
+                                        }
+                                        printWriter.println(JSON.toJSONString(chatRecord));
                                     }
-                                    chatRecord.setMessagecontent(content);
-                                    printWriter.println(JSON.toJSONString(chatRecord));
                                 }
                                 break;
                         }
@@ -402,4 +486,69 @@ public class SocketChatTest {
         chatRecord.setMessagecontent(JSON.toJSONString(chatRecordList));
         return JSON.toJSONString(chatRecord);
     }
+
+    /**
+     * 群通知消息
+     * */
+    public ChatRecord buildGroupTextNotice(String groupAccount,String groupName,String message) {
+        ChatRecord chatRecord = new ChatRecord();
+        chatRecord.setSourcesenderid("-1");
+        chatRecord.setSourcesendername("SYSTEM");
+        chatRecord.setMessagefromid(groupAccount);
+        chatRecord.setMessagefromname(groupName);
+        chatRecord.setMessagecontent(message);
+        chatRecord.setMessagetype(7);
+        chatRecord.setMessagechattype(1);
+        chatRecord.setMessagestate(1);
+        chatRecord.setMessageid(UUID.randomUUID().toString());
+        chatRecord.setMessagetime(new Date());
+        chatRecord.setGroupdata(1);
+        return chatRecord;
+    }
+
+    public void serviceSendMessage(String userId,ChatRecord chatRecord){
+        chatRecord.setMessagetoid(userId);
+        //插入聊天列表
+        int insert = chatRecordMapper.insert(chatRecord);
+        if (printWriterMap != null && printWriterMap.containsKey(userId)){
+            printWriterMap.get(userId).println(JSON.toJSONString(chatRecord));
+        }
+    }
+
+//    public void receiveMessage(String groupAccount,ChatRecord chatRecord){
+//        if (StringUtils.isEmpty(groupAccount))
+//            throw new BizException(Code.DATA_ERROR);
+//        GroupInfoExample example = new GroupInfoExample();
+//        example.createCriteria().andGroupaccountEqualTo(groupAccount);
+//        List<GroupInfo> groupInfoList = groupInfoMapper.selectByExample(example);
+//        if (groupInfoList.size() > 0){
+//            GroupInfo groupInfo = groupInfoList.get(0);
+//            Map memberParams = new HashMap();
+//            memberParams.put("members",groupInfo.getGroupmembers().split(","));
+//            List<Account> members = custGroupInfoMapper.queryGroupMembersAccount(memberParams);
+//            for (Account account : members){
+//                chatRecord.setMessagetoid(account.getAccount());
+//                //插入聊天列表
+//                int insert = chatRecordMapper.insert(chatRecord);
+//                //插入聊天回执列表
+//                String from = chatRecord.getMessagefromid();
+//                String to = chatRecord.getMessagetoid();
+//                ChatAckExample exampleAck = new ChatAckExample();
+//                exampleAck.createCriteria().andMessageidEqualTo(chatRecord.getMessageid()).andMessagetoidEqualTo(to);
+//                List<ChatAck> listAck = chatAckMapper.selectByExample(exampleAck);
+//                if (listAck == null || listAck.size() == 0){
+//                    ChatAck chatAck = new ChatAck();
+//                    chatAck.setMessageid(chatRecord.getMessageid());
+//                    chatAck.setMessagetoid(to);
+//                    chatAck.setMessagetime(chatRecord.getMessagetime());
+//                    if (!StringUtils.isEmpty(from) && !StringUtils.isEmpty(to) && from.equals(to)){
+//                        chatAck.setMessageack(1);
+//                    } else {
+//                        chatAck.setMessageack(0);
+//                    }
+//                    int insertAck = chatAckMapper.insert(chatAck);
+//                }
+//            }
+//        }
+//    }
 }
