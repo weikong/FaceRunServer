@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: company
+    active: mac
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     sql-script-encoding: utf-8
@@ -29,7 +29,7 @@ host: https://deepkeep.top
 spring:
   profiles: product
   datasource:
-    url: jdbc:mysql://localhost:3306/facerun?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true
+    url: jdbc:mysql://114.116.124.23:3306/facerun?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true
     username: root
     password: kong1988525
     initialSize: 5
@@ -97,6 +97,51 @@ spring:
 #  访问外网路径
   resources:
     static-locations: file:D://UpLoadPath
+  beetl:
+    cache: false
+    template-loader-path: /templates/
+  temp:
+    filePath: temp/
+  salesMail:
+    to: wei.kong@melinked.com
+  http:
+    multipart:
+      enabled: true
+      max-file-size: 30MB
+      max-request-size: 30MB
+
+---
+logging:
+  level:
+    root: info
+    my.app.sample: debug
+host: http://localhost:8080
+spring:
+  profiles: mac
+  datasource:
+    url: jdbc:mysql://localhost:3306/facerun?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true
+    username: root
+    password: 123456
+    initialSize: 5
+    minIdle: 5
+    maxActive: 20
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize: 20
+  mongodb:
+    url: mongodb://172.16.3.223
+    dbname: mmx
+  mvc:
+    static-path-pattern: /**
+#  访问外网路径 /Users/kongwei/KongWeiUpload
+  resources:
+    static-locations: file:/Users/kongwei/KongWeiUpload
   beetl:
     cache: false
     template-loader-path: /templates/
