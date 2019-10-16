@@ -286,7 +286,7 @@ public class SocketChatTest {
                                         if (!StringUtils.isEmpty(to) && printWriterMap.containsKey(to)) {
                                             PrintWriter pw = printWriterMap.get(to);
                                             if (pw != null && pw != printWriter) {
-                                                chatRecord.setMessagestate(1);
+//                                                chatRecord.setMessagestate(1);
                                                 pw.println(JSON.toJSONString(chatRecord));
                                             }
                                         }
@@ -302,8 +302,8 @@ public class SocketChatTest {
                                     }
                                 } else {
 //                                    Account accountFrom = accountService.accountSelect(chatRecord.getSourcesenderid());
-//                                    chatRecord.setMessagetime(new Date());
-//                                    chatRecord.setMessagestate(1);
+                                    chatRecord.setMessagetime(new Date());
+                                    chatRecord.setMessagestate(1);
 //                                    if (accountFrom != null) {
 //                                        chatRecord.setMessagefromavatar(accountFrom.getHeadPortrait());
 //                                    }
@@ -360,7 +360,7 @@ public class SocketChatTest {
                                                 if (!StringUtils.isEmpty(to) && printWriterMap.containsKey(to)) {
                                                     PrintWriter pw = printWriterMap.get(to);
                                                     if (pw != null && pw != printWriter) {
-                                                        chatRecord.setMessagestate(1);
+//                                                        chatRecord.setMessagestate(1);
                                                         pw.println(JSON.toJSONString(chatRecord));
                                                     }
                                                 }

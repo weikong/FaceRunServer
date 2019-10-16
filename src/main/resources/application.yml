@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: mac
+    active: company
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     sql-script-encoding: utf-8

@@ -6,7 +6,7 @@
         SELECT
         cr.*,a1.head_portrait as messagefromavatar,a2.head_portrait as messagetoavatar
         FROM chatrecord cr
-        INNER JOIN chatack ca on ca.messageid = cr.messageid
+        INNER JOIN chatack ca on ca.messageid = cr.messageid  AND ca.messagetoid = cr.messagetoid
         INNER JOIN account a1 on a1.account = cr.sourcesenderid
         INNER JOIN account a2 on a2.account = cr.messagetoid
         WHERE ca.messagetoid=#{toid} AND ca.messageack=0

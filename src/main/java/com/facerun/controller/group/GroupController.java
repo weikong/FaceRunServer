@@ -73,6 +73,23 @@ public class GroupController extends AbsController {
         }
     }
 
+    @PostMapping("/groupQueryByGroupAccount")
+    @ResponseBody
+    public Object queryByGroupAccount(@RequestParam Map params, HttpServletRequest request) {
+        try {
+            Object obj = groupService.groupQueryByGroupAccount(params,request);
+            if (obj == null)
+                throw new BizException(Code.DATA_ERROR);
+            return ajax(obj);
+        } catch (BizException e) {
+            log.error(e.getMessage());
+            return ajax(e);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ajax(Code.FAIL);
+        }
+    }
+
     @PostMapping("/groupUpdate")
     @ResponseBody
     public Object update(@RequestParam Map params, HttpServletRequest request) {

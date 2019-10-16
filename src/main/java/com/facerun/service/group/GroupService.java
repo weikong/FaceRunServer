@@ -121,6 +121,25 @@ public class GroupService {
         return bean2Map;
     }
 
+    public Object groupQueryByGroupAccount(Map params, HttpServletRequest request) {
+        String groupaccount = MapUtils.getString(params, "groupaccount","");
+        if (StringUtils.isEmpty(groupaccount))
+            throw new BizException(Code.DATA_ERROR);
+        GroupInfoExample example = new GroupInfoExample();
+        example.createCriteria().andGroupaccountEqualTo(groupaccount);
+        List<GroupInfo> list = groupInfoMapper.selectByExample(example);
+        if (list != null && list.size() > 0){
+            GroupInfo groupInfo = list.get(0);
+            Map bean2Map = BeanMapUtil.getInstance().beanToMap(groupInfo);
+            Map memberParams = new HashMap();
+            memberParams.put("members",groupInfo.getGroupmembers().split(","));
+            List<Map> members = custGroupInfoMapper.queryGroupMembers(memberParams);
+            bean2Map.put("members",members);
+            return bean2Map;
+        }
+        return null;
+    }
+
     public Object groupQueryByName(Map params, HttpServletRequest request) {
         String groupname = MapUtils.getString(params, "groupname","");
         if (StringUtils.isEmpty(groupname))
