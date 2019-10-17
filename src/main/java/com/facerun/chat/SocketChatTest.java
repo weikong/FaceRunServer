@@ -541,10 +541,39 @@ public class SocketChatTest {
         return chatRecord;
     }
 
+    public ChatRecord buildGroupTextNotice(GroupInfo groupInfo,Account user, String message) {
+        ChatRecordAvatar chatRecord = new ChatRecordAvatar();
+        chatRecord.setSourcesenderid(user.getAccount());
+        chatRecord.setSourcesendername(user.getName());
+        chatRecord.setMessagefromid(groupInfo.getGroupaccount());
+        chatRecord.setMessagefromname(groupInfo.getGroupname());
+        chatRecord.setMessagefromavatar(groupInfo.getGroupheader());
+        chatRecord.setMessagecontent(message);
+        chatRecord.setMessagetype(7);
+        chatRecord.setMessagechattype(1);
+        chatRecord.setMessagestate(1);
+        chatRecord.setMessageid(UUID.randomUUID().toString());
+        chatRecord.setMessagetime(new Date());
+        chatRecord.setGroupdata(1);
+        return chatRecord;
+    }
+
     public void serviceSendMessage(String userId, ChatRecord chatRecord) {
         chatRecord.setMessagetoid(userId);
         //插入聊天列表
         int insert = chatRecordMapper.insert(chatRecord);
+        String to = userId;
+        ChatAckExample exampleAck = new ChatAckExample();
+        exampleAck.createCriteria().andMessageidEqualTo(chatRecord.getMessageid()).andMessagetoidEqualTo(to);
+        List<ChatAck> listAck = chatAckMapper.selectByExample(exampleAck);
+        if (listAck == null || listAck.size() == 0) {
+            ChatAck chatAck = new ChatAck();
+            chatAck.setMessageid(chatRecord.getMessageid());
+            chatAck.setMessagetoid(to);
+            chatAck.setMessagetime(chatRecord.getMessagetime());
+            chatAck.setMessageack(0);
+            int insertAck = chatAckMapper.insert(chatAck);
+        }
         if (printWriterMap != null && printWriterMap.containsKey(userId)) {
             printWriterMap.get(userId).println(JSON.toJSONString(chatRecord));
         }

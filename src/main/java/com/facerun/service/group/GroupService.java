@@ -85,11 +85,12 @@ public class GroupService {
         if (insert != 1)
             throw new BizException(Code.FAIL_DATABASE_INSERT);
         Map bean2Map = BeanMapUtil.getInstance().beanToMap(groupInfo);
+        //同步发送群通知消息
         Map memberParams = new HashMap();
         memberParams.put("members", groupInfo.getGroupmembers().split(","));
         List<Account> list = custGroupInfoMapper.queryGroupMembersAccount(memberParams);
         bean2Map.put("members", list);
-        ChatRecord content = socketChatTest.buildGroupTextNotice(groupInfo, account.getName() + " 创建群组 " + groupname);
+        ChatRecord content = socketChatTest.buildGroupTextNotice(groupInfo, account,account.getName() + " 创建群组 " + groupname);
         for (Account a : list) {
             socketChatTest.serviceSendMessage(a.getAccount(), content);
         }
@@ -177,8 +178,15 @@ public class GroupService {
         String groupname = MapUtils.getString(params, "groupname", "");
         String groupdesc = MapUtils.getString(params, "groupdesc", "");
         String groupheader = MapUtils.getString(params, "groupheader", "");
+        String updateUserName = MapUtils.getString(params, "updateusername", "");
+        int userid = MapUtils.getInteger(params, "userid", 0);
         if (id <= 0)
             throw new BizException(Code.DATA_ERROR);
+        if (userid <= 0)
+            throw new BizException(Code.USER_NOT_EXIST);
+        Account account = accountService.accountSelect(userid);
+        if (account == null)
+            throw new BizException(Code.USER_NOT_EXIST);
         if (StringUtils.isEmpty(groupname))
             throw new BizException(Code.DATA_ERROR);
         GroupInfo groupInfo = groupInfoMapper.selectByPrimaryKey(id);
@@ -188,7 +196,17 @@ public class GroupService {
             groupInfo.setGroupdesc(groupdesc);
         if (!StringUtils.isEmpty(groupheader))
             groupInfo.setGroupheader(groupheader);
-        groupInfoMapper.updateByPrimaryKeySelective(groupInfo);
+        int update = groupInfoMapper.updateByPrimaryKeySelective(groupInfo);
+        if (update == 0)
+            throw new BizException(Code.FAIL_DATABASE_UPDATE);
+        //同步发送群通知消息
+        Map memberParams = new HashMap();
+        memberParams.put("members", groupInfo.getGroupmembers().split(","));
+        List<Account> list = custGroupInfoMapper.queryGroupMembersAccount(memberParams);
+        ChatRecord content = socketChatTest.buildGroupTextNotice(groupInfo, account,updateUserName + " 更新群名称 " + groupname);
+        for (Account a : list) {
+            socketChatTest.serviceSendMessage(a.getAccount(), content);
+        }
         return groupInfo;
     }
 }
