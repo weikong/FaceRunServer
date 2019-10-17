@@ -46,7 +46,7 @@ public class GroupController extends AbsController {
     @ResponseBody
     public Object insert(@RequestParam Map params, HttpServletRequest request) {
         try {
-            return ajax(groupService.groupCreate(params,request));
+            return ajax(groupService.groupCreate(params, request));
         } catch (BizException e) {
             log.error(e.getMessage());
             return ajax(e);
@@ -60,7 +60,7 @@ public class GroupController extends AbsController {
     @ResponseBody
     public Object query(@RequestParam Map params, HttpServletRequest request) {
         try {
-            Object obj = groupService.groupQueryById(params,request);
+            Object obj = groupService.groupQueryById(params, request);
             if (obj == null)
                 throw new BizException(Code.DATA_ERROR);
             return ajax(obj);
@@ -77,7 +77,24 @@ public class GroupController extends AbsController {
     @ResponseBody
     public Object queryByGroupAccount(@RequestParam Map params, HttpServletRequest request) {
         try {
-            Object obj = groupService.groupQueryByGroupAccount(params,request);
+            Object obj = groupService.groupQueryByGroupAccount(params, request);
+            if (obj == null)
+                throw new BizException(Code.DATA_ERROR);
+            return ajax(obj);
+        } catch (BizException e) {
+            log.error(e.getMessage());
+            return ajax(e);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ajax(Code.FAIL);
+        }
+    }
+
+    @PostMapping("/queryMyGroups")
+    @ResponseBody
+    public Object queryMyGroups(@RequestParam Map params, HttpServletRequest request) {
+        try {
+            Object obj = groupService.queryMyGroups(params, request);
             if (obj == null)
                 throw new BizException(Code.DATA_ERROR);
             return ajax(obj);
@@ -94,8 +111,7 @@ public class GroupController extends AbsController {
     @ResponseBody
     public Object update(@RequestParam Map params, HttpServletRequest request) {
         try {
-            groupService.groupUpdate(params,request);
-            return ajax();
+            return ajax(groupService.groupUpdate(params, request));
         } catch (BizException e) {
             log.error(e.getMessage());
             return ajax(e);

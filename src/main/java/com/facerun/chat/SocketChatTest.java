@@ -6,6 +6,7 @@ import com.facerun.bean.*;
 import com.facerun.dao.*;
 import com.facerun.exception.BizException;
 import com.facerun.service.AccountService;
+import com.facerun.service.group.GroupService;
 import com.facerun.util.Code;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,8 @@ public class SocketChatTest {
     private GroupInfoMapper groupInfoMapper;
     @Autowired
     private CustGroupInfoMapper custGroupInfoMapper;
+    @Autowired
+    private GroupService groupService;
 
     private static final int PORT = 9999;
     private Map<String, PrintWriter> printWriterMap = new HashMap<>();
@@ -221,7 +224,7 @@ public class SocketChatTest {
                                     example.createCriteria().andMessageidEqualTo(chatRecord.getMessageid()).andMessagetoidEqualTo(chatRecord.getSourcesenderid());
                                     List<ChatAck> list = chatAckMapper.selectByExample(example);
                                     if (list != null && list.size() > 0) {
-                                        for (ChatAck chatAck : list){
+                                        for (ChatAck chatAck : list) {
                                             chatAck.setMessageack(1);
                                             chatAckMapper.updateByPrimaryKey(chatAck);
                                         }
@@ -236,8 +239,8 @@ public class SocketChatTest {
 //                                printWriter.println(JSON.toJSONString(ackClient(chatRecord.getMessageid())));
                                 int insert = 0;
 //                                String content = "";
-                                boolean isGroup = chatRecord.getGroupdata() == 1 ? true: false;
-                                if (!isGroup){
+                                boolean isGroup = chatRecord.getGroupdata() == 1 ? true : false;
+                                if (!isGroup) {
                                     Account accountFrom = accountService.accountSelect(chatRecord.getSourcesenderid());
                                     Account accountTo = accountService.accountSelect(chatRecord.getMessagetoid());
                                     try {
@@ -256,7 +259,7 @@ public class SocketChatTest {
                                         ChatRecordExample example = new ChatRecordExample();
                                         example.createCriteria().andMessageidEqualTo(chatRecord.getMessageid());
                                         List<ChatRecord> list = chatRecordMapper.selectByExample(example);
-                                        if (list != null && list.size() > 0){
+                                        if (list != null && list.size() > 0) {
                                             insert = chatRecordMapper.updateByPrimaryKeySelective(list.get(0));
                                         } else {
                                             insert = chatRecordMapper.insert(chatRecord);
@@ -271,12 +274,12 @@ public class SocketChatTest {
                                         ChatAckExample exampleAck = new ChatAckExample();
                                         exampleAck.createCriteria().andMessageidEqualTo(chatRecord.getMessageid()).andMessagetoidEqualTo(to);
                                         List<ChatAck> listAck = chatAckMapper.selectByExample(exampleAck);
-                                        if (listAck == null || listAck.size() == 0){
+                                        if (listAck == null || listAck.size() == 0) {
                                             ChatAck chatAck = new ChatAck();
                                             chatAck.setMessageid(chatRecord.getMessageid());
                                             chatAck.setMessagetoid(to);
                                             chatAck.setMessagetime(chatRecord.getMessagetime());
-                                            if (!StringUtils.isEmpty(from) && !StringUtils.isEmpty(to) && from.equals(to)){
+                                            if (!StringUtils.isEmpty(from) && !StringUtils.isEmpty(to) && from.equals(to)) {
                                                 chatAck.setMessageack(1);
                                             } else {
                                                 chatAck.setMessageack(0);
@@ -316,10 +319,12 @@ public class SocketChatTest {
                                     List<GroupInfo> groupInfoList = groupInfoMapper.selectByExample(exampleG);
                                     if (groupInfoList.size() > 0) {
                                         GroupInfo groupInfo = groupInfoList.get(0);
+                                        chatRecord.setMessagefromname(groupInfo.getGroupname());
+                                        chatRecord.setMessagefromavatar(groupInfo.getGroupheader());
                                         Map memberParams = new HashMap();
                                         memberParams.put("members", groupInfo.getGroupmembers().split(","));
                                         List<Account> members = custGroupInfoMapper.queryGroupMembersAccount(memberParams);
-                                        for (Account account : members){
+                                        for (Account account : members) {
                                             try {
                                                 chatRecord.setMessagetoid(account.getAccount());
                                                 chatRecord.setMessagetoname(account.getName());
@@ -331,7 +336,7 @@ public class SocketChatTest {
                                                 ChatRecordExample example = new ChatRecordExample();
                                                 example.createCriteria().andMessageidEqualTo(chatRecord.getMessageid()).andMessagetoidEqualTo(account.getAccount());
                                                 List<ChatRecord> list = chatRecordMapper.selectByExample(example);
-                                                if (list != null && list.size() > 0){
+                                                if (list != null && list.size() > 0) {
                                                     insert = chatRecordMapper.updateByPrimaryKeySelective(list.get(0));
                                                 } else {
                                                     insert = chatRecordMapper.insert(chatRecord);
@@ -345,12 +350,12 @@ public class SocketChatTest {
                                                 ChatAckExample exampleAck = new ChatAckExample();
                                                 exampleAck.createCriteria().andMessageidEqualTo(chatRecord.getMessageid()).andMessagetoidEqualTo(to);
                                                 List<ChatAck> listAck = chatAckMapper.selectByExample(exampleAck);
-                                                if (listAck == null || listAck.size() == 0){
+                                                if (listAck == null || listAck.size() == 0) {
                                                     ChatAck chatAck = new ChatAck();
                                                     chatAck.setMessageid(chatRecord.getMessageid());
                                                     chatAck.setMessagetoid(to);
                                                     chatAck.setMessagetime(chatRecord.getMessagetime());
-                                                    if (!StringUtils.isEmpty(from) && !StringUtils.isEmpty(to) && from.equals(to)){
+                                                    if (!StringUtils.isEmpty(from) && !StringUtils.isEmpty(to) && from.equals(to)) {
                                                         chatAck.setMessageack(1);
                                                     } else {
                                                         chatAck.setMessageack(0);
@@ -469,6 +474,8 @@ public class SocketChatTest {
         return JSON.toJSONString(chatRecord);
     }
 
+    private Map<String,GroupInfo> groupInfoMap = new HashMap<>();
+
     public String buildOfflineData(String toId) {
         List<ChatRecord> list = new ArrayList<>();
         Map params = new HashMap();
@@ -477,6 +484,17 @@ public class SocketChatTest {
         if (chatRecordList == null || chatRecordList.size() == 0)
             return "";
         for (ChatRecordAvatar chatRecord : chatRecordList) {
+            if (chatRecord.getGroupdata() == 1){
+                String groupAccount = chatRecord.getMessagefromid();
+                GroupInfo groupInfo;
+                if (groupInfoMap.containsKey(groupAccount)){
+                    groupInfo = groupInfoMap.get(groupAccount);
+                } else {
+                    groupInfo = groupService.groupQueryByGroupAccount(groupAccount);
+                }
+                if (groupInfo != null)
+                    chatRecord.setMessagefromavatar(groupInfo.getGroupheader());
+            }
             chatRecord.setMessagecontent(URLDecoder.decode(chatRecord.getMessagecontent()));
         }
         ChatRecord chatRecord = new ChatRecord();
@@ -489,8 +507,8 @@ public class SocketChatTest {
 
     /**
      * 群通知消息
-     * */
-    public ChatRecord buildGroupTextNotice(String groupAccount,String groupName,String message) {
+     */
+    public ChatRecord buildGroupTextNotice(String groupAccount, String groupName, String message) {
         ChatRecord chatRecord = new ChatRecord();
         chatRecord.setSourcesenderid("-1");
         chatRecord.setSourcesendername("SYSTEM");
@@ -506,11 +524,28 @@ public class SocketChatTest {
         return chatRecord;
     }
 
-    public void serviceSendMessage(String userId,ChatRecord chatRecord){
+    public ChatRecord buildGroupTextNotice(GroupInfo groupInfo, String message) {
+        ChatRecordAvatar chatRecord = new ChatRecordAvatar();
+        chatRecord.setSourcesenderid("-1");
+        chatRecord.setSourcesendername("SYSTEM");
+        chatRecord.setMessagefromid(groupInfo.getGroupaccount());
+        chatRecord.setMessagefromname(groupInfo.getGroupname());
+        chatRecord.setMessagefromavatar(groupInfo.getGroupheader());
+        chatRecord.setMessagecontent(message);
+        chatRecord.setMessagetype(7);
+        chatRecord.setMessagechattype(1);
+        chatRecord.setMessagestate(1);
+        chatRecord.setMessageid(UUID.randomUUID().toString());
+        chatRecord.setMessagetime(new Date());
+        chatRecord.setGroupdata(1);
+        return chatRecord;
+    }
+
+    public void serviceSendMessage(String userId, ChatRecord chatRecord) {
         chatRecord.setMessagetoid(userId);
         //插入聊天列表
         int insert = chatRecordMapper.insert(chatRecord);
-        if (printWriterMap != null && printWriterMap.containsKey(userId)){
+        if (printWriterMap != null && printWriterMap.containsKey(userId)) {
             printWriterMap.get(userId).println(JSON.toJSONString(chatRecord));
         }
     }
