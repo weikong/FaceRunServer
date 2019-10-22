@@ -134,6 +134,9 @@
         <table tableName="groupinfo" domainObjectName="GroupInfo">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
+        <table tableName="socketconn" domainObjectName="SocketConn">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
     </context>
 
 </generatorConfiguration>

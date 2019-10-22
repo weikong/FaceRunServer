@@ -7,11 +7,11 @@ import java.io.File;
  */
 public class Constant {
 
-//    public static final String HTTP_ROOT = "https://deepkeep.top/";
-//    public static final String UPLOAD_FILE_PATH = "/media/UpLoadPath/"; //华为云 图片存储路径
+    public static final String HTTP_ROOT = "https://deepkeep.top/";
+    public static final String UPLOAD_FILE_PATH = "/media/UpLoadPath/"; //华为云 图片存储路径
 
-    public static final String HTTP_ROOT = "http://172.17.7.164:9090/";
-    public static final String UPLOAD_FILE_PATH = "D://UpLoadPath/"; //公司 图片存储路径
+//    public static final String HTTP_ROOT = "http://172.17.7.164:9090/";
+//    public static final String UPLOAD_FILE_PATH = "D://UpLoadPath/"; //公司 图片存储路径
 
 //    public static final String HTTP_ROOT = "http://172.17.7.134:9090/";
 //    public static final String UPLOAD_FILE_PATH = "/Users/kongwei/KongWeiUpload/"; //MAC 图片存储路径

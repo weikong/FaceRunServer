@@ -45,10 +45,13 @@ public class SocketChatTest {
     @Autowired
     private GroupService groupService;
 
+    @Autowired
+    private SocketConnMapper socketConnMapper;
+
     private static final int PORT = 9999;
     private Map<String, PrintWriter> printWriterMap = new HashMap<>();
     private Map<String, Service> serviceMap = new HashMap<>();
-    private Map<String, String> IPAddressIDMap = new HashMap<>();
+//    private Map<String, String> IPAddressIDMap = new HashMap<>();
 
     private ServerSocket server = null;
     private ExecutorService mExecutorService = null;
@@ -66,32 +69,42 @@ public class SocketChatTest {
                     //步骤一
                     server = new ServerSocket(PORT);
                     mExecutorService = Executors.newCachedThreadPool();
-                    System.out.println("服务器已启动...");
+                    System.out.println("Socket 服务器已启动...");
                     Socket client = null;
                     while (true) {
                         //步骤二，每接受到一个新Socket连接请求，就会新建一个Thread去处理与其之间的通信
                         try {
                             client = server.accept();
-                            client.setSoTimeout(35 * 1000);
+//                            client.setSoTimeout(35 * 1000);
                             String getHostAddress = client.getInetAddress().getHostAddress();
-                            if (serviceMap.containsKey(getHostAddress)) {
-                                Service service = serviceMap.get(getHostAddress);
-                                service.setSocket(client);
-                            } else {
-                                Service service = new Service(client);
-                                serviceMap.put(getHostAddress, service);
-                                mExecutorService.execute(service);
-                            }
+
+//                            int getHostPort = client.getPort();
+//                            SocketConn socketConn = new SocketConn();
+//                            socketConn.setIpaddress(getHostAddress);
+//                            socketConn.setIpport(getHostPort);
+//                            int insert = socketConnMapper.insert(socketConn);
+
+                            Service service = new Service(client);
+                            mExecutorService.execute(service);
+
+//                            if (serviceMap.containsKey(getHostAddress)) {
+//                                Service service = serviceMap.get(getHostAddress);
+//                                service.setSocket(client);
+//                            } else {
+//                                Service service = new Service(client);
+//                                serviceMap.put(getHostAddress, service);
+//                                mExecutorService.execute(service);
+//                            }
                         } catch (Exception e) {
                             e.printStackTrace();
-                            System.out.println("服务停止");
+                            System.out.println("Socket 服务停止");
                         }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    System.out.println("服务停止1");
+                    System.out.println("Socket 服务停止1");
                 }
-                System.out.println("服务停止2");
+                System.out.println("Socket 服务停止2");
             }
         }).start();
     }
@@ -112,7 +125,7 @@ public class SocketChatTest {
                 printWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
                 printWriter.println(connectSuccess());
-                System.out.println(connectSuccess());
+                System.out.println("Service:"+connectSuccess());
             } catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("Service IOException");
@@ -127,7 +140,7 @@ public class SocketChatTest {
                 printWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
                 printWriter.println(connectSuccess());
-                System.out.println(connectSuccess());
+                System.out.println("setSocket:"+connectSuccess());
             } catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("Service IOException");
@@ -176,9 +189,9 @@ public class SocketChatTest {
                                 if (printWriterMap.containsKey(uid)) {
                                     printWriterMap.remove(uid);
                                 }
-                                if (serviceMap.containsKey(hd)) {
-                                    serviceMap.get(hd).stopService();
-                                    serviceMap.remove(hd);
+                                if (serviceMap.containsKey(uid)) {
+                                    serviceMap.get(uid).stopService();
+                                    serviceMap.remove(uid);
                                 }
 
                                 in.close();
@@ -189,21 +202,44 @@ public class SocketChatTest {
                                 break;
                             case 4: //Login
                                 String getHostAddress = socket.getInetAddress().getHostAddress();
+                                int getHostPort = socket.getPort();
                                 String userId = chatRecord.getMessagefromid();
 
-                                //更新Service
-                                if (IPAddressIDMap.containsKey(userId)) {
-                                    String ip = IPAddressIDMap.get(userId);
-                                    if (serviceMap.containsKey(ip)) {
-                                        Service service = serviceMap.get(ip);
-                                        System.out.println("service.serviceId: " + service.getServiceId());
-                                        if (!service.getServiceId().equals(serviceId)) {
-                                            service.stopService();
-                                            serviceMap.remove(ip);
-                                        }
+                                //將IP和UserID插入数据库
+                                SocketConnExample socketConnExample = new SocketConnExample();
+                                socketConnExample.createCriteria().andIpaddressEqualTo(getHostAddress).andUseridEqualTo(userId);
+                                List<SocketConn> socketConnList = socketConnMapper.selectByExample(socketConnExample);
+                                if (socketConnList == null || socketConnList.size() == 0){
+                                    SocketConn socketConn = new SocketConn();
+                                    socketConn.setIpaddress(getHostAddress);
+                                    socketConn.setIpport(getHostPort);
+                                    socketConn.setUserid(userId);
+                                    int insert = socketConnMapper.insert(socketConn);
+                                    serviceMap.put(userId,this);
+                                } else {
+                                    SocketConn socketConn = socketConnList.get(0);
+                                    socketConn.setIpport(getHostPort);
+                                    int update = socketConnMapper.updateByPrimaryKey(socketConn);
+                                    if (serviceMap.containsKey(userId)){
+                                        serviceMap.get(userId).stopService();
+                                        serviceMap.remove(userId);
                                     }
+                                    serviceMap.put(userId,this);
                                 }
-                                IPAddressIDMap.put(userId, getHostAddress);
+
+                                //更新Service
+//                                if (IPAddressIDMap.containsKey(userId)) {
+//                                    String ip = IPAddressIDMap.get(userId);
+//                                    if (serviceMap.containsKey(ip)) {
+//                                        Service service = serviceMap.get(ip);
+//                                        System.out.println("service.serviceId: " + service.getServiceId());
+//                                        if (!service.getServiceId().equals(serviceId)) {
+//                                            service.stopService();
+//                                            serviceMap.remove(ip);
+//                                        }
+//                                    }
+//                                }
+//                                IPAddressIDMap.put(userId, getHostAddress);
 
                                 //清除之前的PrintWriter
                                 if (printWriterMap.containsKey(userId)) {
@@ -216,6 +252,7 @@ public class SocketChatTest {
                                 String offlineData = buildOfflineData(userId);
                                 if (!StringUtils.isEmpty(offlineData))
                                     printWriter.println(offlineData);
+                                System.out.println("Login userId = "+userId+"   getHostAddress = "+getHostAddress+"   "+receiveMsg);
                                 break;
                             case 5:
                                 try {
@@ -229,9 +266,10 @@ public class SocketChatTest {
                                             chatAckMapper.updateByPrimaryKey(chatAck);
                                         }
                                     }
-                                    System.out.println(receiveMsg);
+//                                    System.out.println("ACK "+receiveMsg);
                                 } catch (Exception e) {
                                     e.printStackTrace();
+                                    System.out.println("ACK ERROR "+receiveMsg);
                                 }
                                 break;
                             case 9: //聊天内容
@@ -387,24 +425,36 @@ public class SocketChatTest {
                         }
                     } else {
                         String getHostAddress = socket.getInetAddress().getHostAddress();
-                        if (!StringUtils.isEmpty(getHostAddress) && serviceMap.containsKey(getHostAddress)) {
-                            serviceMap.remove(getHostAddress);
-                        }
-                        Iterator<Map.Entry<String, String>> entries = IPAddressIDMap.entrySet().iterator();
-                        String IpAddressKey = "";
-                        while (entries.hasNext()) {
-                            Map.Entry<String, String> entry = entries.next();
-                            String key = entry.getKey();
-                            String value = entry.getValue();
-                            if (getHostAddress.equals(value)) {
-                                IpAddressKey = key;
-                                break;
+                        int getPort = socket.getPort();
+                        SocketConnExample socketConnExample = new SocketConnExample();
+                        socketConnExample.createCriteria().andIpaddressEqualTo(getHostAddress).andIpportEqualTo(getPort);
+                        List<SocketConn> list = socketConnMapper.selectByExample(socketConnExample);
+                        if (list != null && list.size() > 0){
+                            for (SocketConn socketConn : list){
+                                if (!StringUtils.isEmpty(socketConn.getUserid()) && printWriterMap.containsKey(socketConn.getUserid())) {
+//                            IPAddressIDMap.remove(IpAddressKey);
+                                    printWriterMap.remove(socketConn.getUserid());
+                                }
                             }
                         }
-                        if (!StringUtils.isEmpty(IpAddressKey)) {
-                            IPAddressIDMap.remove(IpAddressKey);
-                            printWriterMap.remove(IpAddressKey);
-                        }
+//                        if (!StringUtils.isEmpty(getHostAddress) && serviceMap.containsKey(getHostAddress)) {
+//                            serviceMap.remove(getHostAddress);
+//                        }
+//                        Iterator<Map.Entry<String, String>> entries = IPAddressIDMap.entrySet().iterator();
+//                        String IpAddressKey = "";
+//                        while (entries.hasNext()) {
+//                            Map.Entry<String, String> entry = entries.next();
+//                            String key = entry.getKey();
+//                            String value = entry.getValue();
+//                            if (getHostAddress.equals(value)) {
+//                                IpAddressKey = key;
+//                                break;
+//                            }
+//                        }
+//                        if (!StringUtils.isEmpty(IpAddressKey)) {
+////                            IPAddressIDMap.remove(IpAddressKey);
+//                            printWriterMap.remove(IpAddressKey);
+//                        }
                         stopService();
                         in.close();
                         in = null;
@@ -418,24 +468,36 @@ public class SocketChatTest {
                 e.printStackTrace();
                 System.out.println("服务停止4");
                 String getHostAddress = socket.getInetAddress().getHostAddress();
-                if (!StringUtils.isEmpty(getHostAddress) && serviceMap.containsKey(getHostAddress)) {
-                    serviceMap.remove(getHostAddress);
-                }
-                Iterator<Map.Entry<String, String>> entries = IPAddressIDMap.entrySet().iterator();
-                String IpAddressKey = "";
-                while (entries.hasNext()) {
-                    Map.Entry<String, String> entry = entries.next();
-                    String key = entry.getKey();
-                    String value = entry.getValue();
-                    if (getHostAddress.equals(value)) {
-                        IpAddressKey = key;
-                        break;
+                int getPort = socket.getPort();
+                SocketConnExample socketConnExample = new SocketConnExample();
+                socketConnExample.createCriteria().andIpaddressEqualTo(getHostAddress).andIpportEqualTo(getPort);
+                List<SocketConn> list = socketConnMapper.selectByExample(socketConnExample);
+                if (list != null && list.size() > 0){
+                    for (SocketConn socketConn : list){
+                        if (!StringUtils.isEmpty(socketConn.getUserid()) && printWriterMap.containsKey(socketConn.getUserid())) {
+//                            IPAddressIDMap.remove(IpAddressKey);
+                            printWriterMap.remove(socketConn.getUserid());
+                        }
                     }
                 }
-                if (!StringUtils.isEmpty(IpAddressKey)) {
-                    IPAddressIDMap.remove(IpAddressKey);
-                    printWriterMap.remove(IpAddressKey);
-                }
+//                if (!StringUtils.isEmpty(getHostAddress) && serviceMap.containsKey(getHostAddress)) {
+//                    serviceMap.remove(getHostAddress);
+//                }
+//                Iterator<Map.Entry<String, String>> entries = IPAddressIDMap.entrySet().iterator();
+//                String IpAddressKey = "";
+//                while (entries.hasNext()) {
+//                    Map.Entry<String, String> entry = entries.next();
+//                    String key = entry.getKey();
+//                    String value = entry.getValue();
+//                    if (getHostAddress.equals(value)) {
+//                        IpAddressKey = key;
+//                        break;
+//                    }
+//                }
+//                if (!StringUtils.isEmpty(IpAddressKey)) {
+////                    IPAddressIDMap.remove(IpAddressKey);
+//                    printWriterMap.remove(IpAddressKey);
+//                }
                 stopService();
                 try {
                     in.close();
