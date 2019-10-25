@@ -137,6 +137,9 @@
         <table tableName="socketconn" domainObjectName="SocketConn">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
+        <table tableName="mediasrc" domainObjectName="MediaSrc">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
     </context>
 
 </generatorConfiguration>

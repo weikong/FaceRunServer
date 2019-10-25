@@ -3,7 +3,11 @@ package com.facerun.controller;
 
 import com.facerun.bean.Food;
 import com.facerun.bean.FoodExample;
+import com.facerun.bean.MediaSrc;
+import com.facerun.bean.ResGifBean;
+import com.facerun.config.Constant;
 import com.facerun.dao.FoodMapper;
+import com.facerun.dao.MediaSrcMapper;
 import com.facerun.dao.RunMapper;
 import com.facerun.exception.BizException;
 import com.facerun.service.order.OrderService;
@@ -19,7 +23,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,6 +44,55 @@ public class TestRestController extends AbsController {
     private FoodMapper foodMapper;
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private MediaSrcMapper mediaSrcMapper;
+
+    String parentDir = "gif\\res";
+
+    /**
+     */
+    @GetMapping("gif")
+    @ResponseBody
+    public Object gif(@RequestParam Map params, Model model) {
+        try {
+            List<ResGifBean> zipGifList = new ArrayList<>();
+            String domainPath = "https://deepkeep.top";
+            File rootDir = new File(Constant.UPLOAD_FILE_PATH);
+            File gifDir = new File(Constant.RES_GIF_PATH + "res");
+            if (gifDir.exists()) {
+                File[] gifChildDirs = gifDir.listFiles();
+                if (gifChildDirs != null && gifChildDirs.length > 0) {
+                    for (File childDir : gifChildDirs) {
+                        if (childDir.isDirectory()) {
+                            String name = childDir.getName();
+                            ResGifBean zipBean = new ResGifBean();
+                            zipBean.setName(name);
+                            zipBean.setZip(Constant.RES_GIF_PATH+"zip");
+                            File[] gifFiles = childDir.listFiles();
+                            for (File file : gifFiles) {
+                                if (file.exists() && file.length() > 0) {
+                                    String path = file.getAbsolutePath();
+                                    String urlPath = path.replace(rootDir.getAbsolutePath(), "").replace("\\", "/");
+                                    urlPath = domainPath + urlPath;
+                                    MediaSrc mediaSrc = new MediaSrc();
+                                    mediaSrc.setMedianame(name);
+                                    mediaSrc.setMediapath(urlPath);
+                                    mediaSrc.setMediatype("gif");
+                                    mediaSrcMapper.insert(mediaSrc);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return ajax();
+        } catch (BizException e) {
+            return ajax(e);
+        } catch (Exception e) {
+            return ajax(Code.FAIL);
+        }
+    }
 
     @RequestMapping(value = "/query_order", method = {RequestMethod.POST, RequestMethod.GET})
     @ResponseBody
@@ -57,7 +113,7 @@ public class TestRestController extends AbsController {
             Object o = orderService.createOrder(params);
             try {
                 orderService.queryOrdersList(params);
-            }catch (Exception e){
+            } catch (Exception e) {
 
             }
             return ajax(o);
@@ -75,7 +131,7 @@ public class TestRestController extends AbsController {
             Object o = orderService.delOrderById(params);
             try {
                 orderService.queryOrdersList(params);
-            }catch (Exception e){
+            } catch (Exception e) {
 
             }
             return ajax(o);
@@ -91,8 +147,8 @@ public class TestRestController extends AbsController {
     @GetMapping("test1")
     @ResponseBody
     public String test1(@RequestParam Map params, Model model) {
-        String param = MapUtils.getString(params,"param","");
-        return "test1 param = "+param;
+        String param = MapUtils.getString(params, "param", "");
+        return "test1 param = " + param;
     }
 
     /**
@@ -100,8 +156,8 @@ public class TestRestController extends AbsController {
     @PostMapping("test2")
     @ResponseBody
     public String test2(@RequestParam Map params, Model model) {
-        String param = MapUtils.getString(params,"param","");
-        return "test2 param = "+param;
+        String param = MapUtils.getString(params, "param", "");
+        return "test2 param = " + param;
     }
 
     /**
@@ -175,6 +231,6 @@ public class TestRestController extends AbsController {
     @PostMapping("run_datas3")
     @ResponseBody
     public String runDatas3(@RequestBody String params, Model model) {
-        return "Hello world!Mr kong 3 = "+params;
+        return "Hello world!Mr kong 3 = " + params;
     }
 }
