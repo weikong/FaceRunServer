@@ -1,10 +1,7 @@
 package com.facerun.controller;
 
 
-import com.facerun.bean.Food;
-import com.facerun.bean.FoodExample;
-import com.facerun.bean.MediaSrc;
-import com.facerun.bean.ResGifBean;
+import com.facerun.bean.*;
 import com.facerun.config.Constant;
 import com.facerun.dao.FoodMapper;
 import com.facerun.dao.MediaSrcMapper;
@@ -49,6 +46,40 @@ public class TestRestController extends AbsController {
     private MediaSrcMapper mediaSrcMapper;
 
     String parentDir = "gif\\res";
+
+    /**
+     */
+    @PostMapping("gifZipFiles")
+    @ResponseBody
+    public Object gifZipFiles(@RequestParam Map params, Model model) {
+        try {
+            List<ResGifBean> list = new ArrayList<>();
+            String domainPath = "https://deepkeep.top";
+            File gifDir = new File(Constant.RES_GIF_PATH + "res");
+            if (gifDir.exists()) {
+                File[] gifChildDirs = gifDir.listFiles();
+                for (File gifChild : gifChildDirs){
+                    ResGifBean resGifBean = new ResGifBean();
+                    String name = gifChild.getName();
+                    resGifBean.setName(name);
+                    String urlPath = domainPath + "/gif/zip/" + name +".zip";
+                    resGifBean.setZip(urlPath);
+                    MediaSrcExample example = new MediaSrcExample();
+                    example.createCriteria().andMedianameEqualTo(name);
+                    List<MediaSrc> mediaSrcList = mediaSrcMapper.selectByExample(example);
+                    resGifBean.setList(mediaSrcList);
+                    if (mediaSrcList != null && mediaSrcList.size() > 0)
+                        resGifBean.setThumb(mediaSrcList.get(0).getMediapath());
+                    list.add(resGifBean);
+                }
+            }
+            return ajax(list);
+        } catch (BizException e) {
+            return ajax(e);
+        } catch (Exception e) {
+            return ajax(Code.FAIL);
+        }
+    }
 
     /**
      */
