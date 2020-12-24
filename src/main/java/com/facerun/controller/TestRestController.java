@@ -54,7 +54,7 @@ public class TestRestController extends AbsController {
     public Object gifZipFiles(@RequestParam Map params, Model model) {
         try {
             List<ResGifBean> list = new ArrayList<>();
-            String domainPath = "https://deepkeep.top";
+            String domainPath = Constant.HTTP_ROOT;
             File gifDir = new File(Constant.RES_GIF_PATH + "res");
             if (gifDir.exists()) {
                 File[] gifChildDirs = gifDir.listFiles();
@@ -88,7 +88,7 @@ public class TestRestController extends AbsController {
     public Object gif(@RequestParam Map params, Model model) {
         try {
             List<ResGifBean> zipGifList = new ArrayList<>();
-            String domainPath = "https://deepkeep.top";
+            String domainPath = Constant.HTTP_ROOT;
             File rootDir = new File(Constant.UPLOAD_FILE_PATH);
             File gifDir = new File(Constant.RES_GIF_PATH + "res");
             if (gifDir.exists()) {

@@ -140,6 +140,15 @@
         <table tableName="mediasrc" domainObjectName="MediaSrc">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
+        <table tableName="yomeat" domainObjectName="YOMeat">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="university" domainObjectName="University">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="region" domainObjectName="Region">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
     </context>
 
 </generatorConfiguration>

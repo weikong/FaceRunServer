@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.facerun.dao.CustRegionMapper">
+
+    <select id="queryRegionP" parameterType="java.util.Map" resultType="com.facerun.bean.Record">
+        SELECT
+        r.id,r.name
+        FROM region r
+        WHERE r.level=1
+    </select>
+
+    <select id="queryRegionPC" parameterType="java.util.Map" resultType="com.facerun.bean.Record">
+        SELECT
+        r.id,r.name
+        FROM region r
+        WHERE r.level=2 AND r.pid=#{pid}
+    </select>
+</mapper>

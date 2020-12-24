@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 
-    <title>Title</title>
+    <title>丫圈</title>
 
     <style>
         * {
@@ -61,6 +61,17 @@
             align-items: inherit;
             margin-top: 47px;
             overflow-x: hidden;
+        }
+
+        .menu_class {
+            color: black;
+            background-color: gainsboro;
+            width: 100vw;
+            float: none;
+            padding-top:10px;
+            padding-left:6px;
+            padding-bottom:10px;
+            padding-right:6px;
         }
 
         /*设置全局鼠标悬停在链接上未点击时的颜色*/
@@ -123,7 +134,7 @@
             color: bisque;
             width: 90px;
             height: auto;
-            float: left;
+            float: right;
             vertical-align: top;
         }
 
@@ -165,10 +176,19 @@
             flex: 1;
         }
 
-        span {
+        .nav_left {
             padding: 2px;
             font-size: 13px;
             width: 66px;
+        }
+
+        /*span {
+            padding: 2px;
+            font-size: 13px;
+            width: 66px;
+        }*/
+
+        #food_list{
         }
 
         .circle {
@@ -191,24 +211,24 @@
 </header>
 
 <div class="content">
-    <nav>
-        <div onclick="loadFood('')"
+    <nav class="nav_left">
+        <div onclick="loadFood('',this)"
              style="width: 100vw;float: none; padding-top:10px;padding-left:6px;padding-bottom:10px;padding-right:6px; color: #cc0000;background-color: white;"
              class="menu_class" id="menu_0"><span
                 style="font-size: 15px">全部</span></div>
-        <div onclick="loadFood('爆辣')"
+        <div onclick="loadFood('爆辣',this)"
              style="width: 100vw;float: none; padding-top:10px;padding-left:6px;padding-bottom:10px;padding-right:6px;"
-             class="menu_class" id="menu_1"><span
-                style="font-size: 15px">爆辣</span></div>
-        <div onclick="loadFood('微辣')"
+             class="menu_class" id="menu_1">
+            <span style="font-size: 15px">爆辣</span></div>
+        <div onclick="loadFood('微辣',this)"
              style="width: 100vw;float: none; padding-top:10px;padding-left:6px;padding-bottom:10px;padding-right:6px;"
              class="menu_class" id="menu_2"><span
                 style="font-size: 15px">一点点辣</span></div>
-        <div onclick="loadFood('五香')"
+        <div onclick="loadFood('五香',this)"
              style="width: 100vw;float: none; padding-top:10px;padding-left:6px;padding-bottom:10px;padding-right:6px;"
              class="menu_class" id="menu_3"><span
                 style="font-size: 15px">点儿都不辣</span></div>
-        <div onclick="loadFood('素食')"
+        <div onclick="loadFood('素食',this)"
              style="width: 100vw;float: none; padding-top:10px;padding-left:6px;padding-bottom:10px;padding-right:6px;"
              class="menu_class" id="menu_4"><span
                 style="font-size: 15px">素食</span></div>
@@ -238,13 +258,16 @@
         loadFood('');
     }
 
-    function loadFood(kind) {
+    function loadFood(kind,view) {
         var url = "/food/list";
         if (kind == null || kind == '') {
             url = url;
         } else {
             url += '?kind=' + kind;
-            defDisplay();
+//            defDisplay();
+        }
+        if(view != null){
+            defDisplay(view);
         }
         var request = new XMLHttpRequest();
         request.onload = function () {
@@ -256,10 +279,31 @@
         request.send(null);
     }
 
-    function defDisplay() {
+//    function defDisplay() {
+//        var menu_0 = document.getElementById("menu_0");
+//        menu_0.style.color = 'black';
+//        menu_0.style.backgroundColor = 'gainsboro';
+//    }
+
+    function defDisplay(menu) {
         var menu_0 = document.getElementById("menu_0");
         menu_0.style.color = 'black';
         menu_0.style.backgroundColor = 'gainsboro';
+        var menu_1 = document.getElementById("menu_1");
+        menu_1.style.color = 'black';
+        menu_1.style.backgroundColor = 'gainsboro';
+        var menu_2 = document.getElementById("menu_2");
+        menu_2.style.color = 'black';
+        menu_2.style.backgroundColor = 'gainsboro';
+        var menu_3 = document.getElementById("menu_3");
+        menu_3.style.color = 'black';
+        menu_3.style.backgroundColor = 'gainsboro';
+        var menu_4 = document.getElementById("menu_4");
+        menu_4.style.color = 'black';
+        menu_4.style.backgroundColor = 'gainsboro';
+
+        menu.style.color = '#cc0000';
+        menu.style.backgroundColor = 'white';
     }
 
     function displayCircleContent(content) {

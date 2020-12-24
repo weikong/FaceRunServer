@@ -11,7 +11,7 @@ public class Constant {
 //    public static final String UPLOAD_FILE_PATH = "/media/UpLoadPath/"; //华为云 图片存储路径
 
     //公司
-    public static final String HTTP_ROOT = "http://172.17.7.164:9090/";
+    public static final String HTTP_ROOT = "http://172.17.7.184:9090/";
     public static final String UPLOAD_FILE_PATH = "D://UpLoadPath/"; // 图片存储路径
     public static final String RES_GIF_PATH = "D://UpLoadPath/gif/"; // Gif存储路径
 
