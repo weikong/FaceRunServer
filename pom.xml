@@ -36,7 +36,7 @@
 		<druid.version>1.0.27</druid.version>
 		<pagehelper.version>4.2.1</pagehelper.version>
 		<guava.version>20.0</guava.version>
-		<http.client.version>4.3.6</http.client.version>
+		<http.client.version>4.5.13</http.client.version>
 
 		<!-- set thymeleaf version -->
 		<thymeleaf.version>3.0.0.RELEASE</thymeleaf.version>
